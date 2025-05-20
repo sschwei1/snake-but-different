@@ -1,0 +1,7 @@
+.footer {
+    -fx-padding: 10px;
+}
+
+.footer > .footer-element {
+    -fx-padding: 0 20px 0 0;
+}

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<BorderPane
+        xmlns:fx="http://javafx.com/fxml"
+        xmlns="http://javafx.com/javafx/21.0.0"
+        fx:controller="at.fhhgb.mc.snake.controller.MainWindowController"
+        stylesheets="@css/custom.css"
+>
+    <top>
+        <MenuBar>
+            <Menu mnemonicParsing="false" text="Game">
+                <MenuItem
+                        mnemonicParsing="false"
+                        onAction="#onStartButtonClick"
+                        text="Start Game"
+                />
+
+                <MenuItem
+                        mnemonicParsing="false"
+                        onAction="#onExitButtonClick"
+                        text="Exit"
+                />
+            </Menu>
+            <Menu mnemonicParsing="false" text="Preferences">
+                <MenuItem
+                        mnemonicParsing="false"
+                        text="Game Speed"
+                />
+            </Menu>
+        </MenuBar>
+    </top>
+
+    <center>
+        <StackPane fx:id="gameContainer" />
+    </center>
+
+    <bottom>
+        <HBox styleClass="footer">
+            <HBox styleClass="footer-element">
+                <Label text="Points: "/>
+                <Label text="100" />
+            </HBox>
+            <Label text="Some Text" styleClass="footer-element" />
+        </HBox>
+    </bottom>
+</BorderPane>
