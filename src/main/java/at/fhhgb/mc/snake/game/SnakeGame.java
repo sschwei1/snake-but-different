@@ -1,10 +1,12 @@
 package at.fhhgb.mc.snake.game;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
+import at.fhhgb.mc.snake.game.event.GameEvent;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.renderer.DefaultRenderer;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.renderer.AbstractGameRenderer;
+import at.fhhgb.mc.snake.game.struct.Point2D;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -15,7 +17,7 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class SnakeGame {
@@ -29,8 +31,9 @@ public class SnakeGame {
     private boolean isRunning;
     private boolean isPaused;
 
+    private Snake.Direction queuedDirection;
     private Snake.Direction currentDirection;
-    private Snake snake;
+    private final Snake snake;
 
     public SnakeGame(Pane container) {
         this.options = GameOptions.getInstance();
@@ -126,14 +129,29 @@ public class SnakeGame {
     }
 
     private void updateEntities() {
+        if(this.queuedDirection != null && this.queuedDirection != this.currentDirection) {
+            this.currentDirection = this.queuedDirection;
+            this.queuedDirection = null;
+        }
+
         this.snake.move(this.currentDirection);
     }
 
     private void updateData() {
+        Point2D headPos = this.snake.getParts().getFirst().getPosition();
+        GameCell headCell = this.renderer.getCellAt(headPos);
+        List<AbstractEntity> consumedEntities = headCell.getEntities();
+
+        for(AbstractEntity entity : consumedEntities) {
+            this.consumeEvents(entity.onConsume());
+        }
+    }
+
+    private void consumeEvents(List<GameEvent> events) {
 
     }
 
-    private Collection<AbstractEntity> getEntities() {
+    private List<AbstractEntity> getEntities() {
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.addAll(this.snake.getParts());
 
@@ -150,27 +168,27 @@ public class SnakeGame {
         switch (event.getCode()) {
             case KeyCode.UP:
             case KeyCode.W:
-                this.updateDirection(Snake.Direction.UP);
+                this.updateQueuedDirection(Snake.Direction.UP);
                 break;
 
             case KeyCode.DOWN:
             case KeyCode.S:
-                this.updateDirection(Snake.Direction.DOWN);
+                this.updateQueuedDirection(Snake.Direction.DOWN);
                 break;
 
             case LEFT:
             case KeyCode.A:
-                this.updateDirection(Snake.Direction.LEFT);
+                this.updateQueuedDirection(Snake.Direction.LEFT);
                 break;
 
             case KeyCode.RIGHT:
             case KeyCode.D:
-                this.updateDirection(Snake.Direction.RIGHT);
+                this.updateQueuedDirection(Snake.Direction.RIGHT);
                 break;
         }
     }
 
-    private void updateDirection(Snake.Direction newDirection) {
+    private void updateQueuedDirection(Snake.Direction newDirection) {
         if(
             this.currentDirection == Snake.Direction.UP    && newDirection == Snake.Direction.DOWN  ||
             this.currentDirection == Snake.Direction.DOWN  && newDirection == Snake.Direction.UP    ||
@@ -180,7 +198,7 @@ public class SnakeGame {
             return;
         }
 
-        this.currentDirection = newDirection;
+        this.queuedDirection = newDirection;
     }
 
     private void handlePause(KeyEvent event) {

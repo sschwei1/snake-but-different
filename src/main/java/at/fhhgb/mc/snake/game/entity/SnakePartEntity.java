@@ -1,7 +1,11 @@
 package at.fhhgb.mc.snake.game.entity;
 
+import at.fhhgb.mc.snake.game.event.DeathEvent;
+import at.fhhgb.mc.snake.game.event.GameEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
+
+import java.util.List;
 
 public class SnakePartEntity extends AbstractEntity implements Cloneable {
     private boolean isHead;
@@ -31,12 +35,14 @@ public class SnakePartEntity extends AbstractEntity implements Cloneable {
     }
 
     @Override
-    public void onConsume() {
+    public List<GameEvent> onConsume() {
         if (this.isHead) {
-            return;
+            return List.of();
         }
 
-
+        return List.of(
+            new DeathEvent()
+        );
     }
 
     @Override

@@ -1,13 +1,18 @@
 package at.fhhgb.mc.snake.game.renderer;
 
+import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameCell extends Pane {
     public enum State {
         EMPTY, FOOD, SNAKE_HEAD, SNAKE, WALL
     }
 
+    private List<AbstractEntity> entities;
     private State state;
 
     public GameCell() {
@@ -17,6 +22,8 @@ public class GameCell extends Pane {
     public GameCell(State state) {
         this.setState(state);
 
+        this.entities = new ArrayList<>();
+
         this.setBorder(new Border(
             new BorderStroke(
                 Color.DARKGRAY,
@@ -25,6 +32,15 @@ public class GameCell extends Pane {
                 new BorderWidths(1)
             )
         ));
+    }
+
+    public void addEntity(AbstractEntity entity) {
+        this.entities.add(entity);
+        this.setState(entity.getType());
+    }
+
+    public List<AbstractEntity> getEntities() {
+        return this.entities;
     }
 
     public State getState() {
@@ -42,6 +58,11 @@ public class GameCell extends Pane {
         }
 
         return this;
+    }
+
+    public void clear() {
+        this.entities.clear();
+        this.setState(State.EMPTY);
     }
 
     // TODO: Fix resizing always remain square problem

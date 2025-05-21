@@ -4,8 +4,8 @@ import at.fhhgb.mc.snake.game.entity.SnakePartEntity;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.struct.Point2D;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Snake {
     public enum Direction {
@@ -65,7 +65,7 @@ public class Snake {
         this.parts.getFirst().getPosition().move(direction);
     }
 
-    public Collection<SnakePartEntity> getParts() {
+    public List<SnakePartEntity> getParts() {
         return this.parts;
     }
 }

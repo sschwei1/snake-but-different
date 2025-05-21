@@ -3,7 +3,7 @@ package at.fhhgb.mc.snake.game.renderer;
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 
-import java.util.Collection;
+import java.util.List;
 
 public class DefaultRenderer extends AbstractGameRenderer {
     private GameCell[][] gameGrid;
@@ -35,12 +35,12 @@ public class DefaultRenderer extends AbstractGameRenderer {
     }
 
     @Override
-    public void update(Collection<AbstractEntity> entities) {
+    public void update(List<AbstractEntity> entities) {
         AbstractEntity head = null;
 
         for(GameCell[] cellArr : this.gameGrid) {
             for(GameCell cell : cellArr) {
-                cell.setState(GameCell.State.EMPTY);
+                cell.clear();
             }
         }
 
@@ -51,12 +51,12 @@ public class DefaultRenderer extends AbstractGameRenderer {
             }
 
             GameCell cell = this.getCellAt(e.getPosition());
-            cell.setState(e.getType());
+            cell.addEntity(e);
         }
 
         if(head != null) {
             GameCell cell = this.getCellAt(head.getPosition());
-            cell.setState(head.getType());
+            cell.setState(GameCell.State.SNAKE_HEAD);
         }
     }
 }
