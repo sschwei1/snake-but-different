@@ -16,8 +16,7 @@ public class MainWindowController {
 
     @FXML
     protected void onStartButtonClick() {
-        GameOptions gameOptions = GameOptions.getInstance();
-        SnakeGame snakeGame = new SnakeGame(gameOptions, gameContainer);
+        SnakeGame snakeGame = new SnakeGame(gameContainer);
         snakeGame.startGame();
         System.out.println("Start button clicked");
     }

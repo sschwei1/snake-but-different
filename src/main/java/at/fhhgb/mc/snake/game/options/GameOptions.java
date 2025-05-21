@@ -1,20 +1,24 @@
 package at.fhhgb.mc.snake.game.options;
 
+import at.fhhgb.mc.snake.game.struct.Point2D;
+
 public class GameOptions {
     private static GameOptions instance;
 
-    private int moveSpeed;
+    private int tickSpeed;
     private int gameWidth;
     private int gameHeight;
+    private int initialSnakeLength;
+    private Point2D startingPosition;
 
     private GameOptions() { }
 
-    public int getMoveSpeed() {
-        return moveSpeed;
+    public int getTickSpeed() {
+        return tickSpeed;
     }
 
-    public GameOptions setMoveSpeed(int moveSpeed) {
-        this.moveSpeed = moveSpeed;
+    public GameOptions setTickSpeed(int moveSpeed) {
+        this.tickSpeed = moveSpeed;
         return this;
     }
 
@@ -36,6 +40,24 @@ public class GameOptions {
         return this;
     }
 
+    public int getInitialSnakeLength() {
+        return initialSnakeLength;
+    }
+
+    public GameOptions setInitialSnakeLength(int initialSnakeLength) {
+        this.initialSnakeLength = initialSnakeLength;
+        return this;
+    }
+
+    public Point2D getStartingPosition() {
+        return startingPosition;
+    }
+
+    public GameOptions setStartingPosition(Point2D startingPosition) {
+        this.startingPosition = startingPosition;
+        return this;
+    }
+
     public static GameOptions updateOptions() {
         instance = readGameOptionsFromFile();
         return instance;
@@ -49,9 +71,11 @@ public class GameOptions {
 
     public static GameOptions resetToDefault() {
         GameOptions defaultOptions = new GameOptions();
-        defaultOptions.moveSpeed = 100;
+        defaultOptions.tickSpeed = 100;
         defaultOptions.gameWidth = 25;
         defaultOptions.gameHeight = 25;
+        defaultOptions.initialSnakeLength = 100;
+        defaultOptions.startingPosition = new Point2D(1,1);
 
         return updateOptions(defaultOptions);
     }

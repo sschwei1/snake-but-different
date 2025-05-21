@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 
 public class GameCell extends Pane {
     public enum State {
-        EMPTY, FOOD, SNAKE, WALL
+        EMPTY, FOOD, SNAKE_HEAD, SNAKE, WALL
     }
 
     private State state;
@@ -19,7 +19,7 @@ public class GameCell extends Pane {
 
         this.setBorder(new Border(
             new BorderStroke(
-                Color.LIGHTGRAY,
+                Color.DARKGRAY,
                 BorderStrokeStyle.SOLID,
                 CornerRadii.EMPTY,
                 new BorderWidths(1)
@@ -34,8 +34,9 @@ public class GameCell extends Pane {
     public GameCell setState(State state) {
         this.state = state;
         switch (state) {
-            case EMPTY -> this.setStyle("-fx-background-color: white");
+            case EMPTY -> this.setStyle(null);
             case FOOD -> this.setStyle("-fx-background-color: red");
+            case SNAKE_HEAD -> this.setStyle("-fx-background-color: lightgreen");
             case SNAKE -> this.setStyle("-fx-background-color: green");
             case WALL -> this.setStyle("-fx-background-color: gray");
         }

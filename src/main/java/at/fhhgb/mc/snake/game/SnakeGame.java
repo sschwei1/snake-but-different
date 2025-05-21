@@ -1,36 +1,60 @@
 package at.fhhgb.mc.snake.game;
 
+import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.renderer.DefaultRenderer;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
-import at.fhhgb.mc.snake.game.renderer.GameRenderer;
+import at.fhhgb.mc.snake.game.renderer.AbstractGameRenderer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventTarget;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 public class SnakeGame {
     private GameOptions options;
     private final Pane container;
-    private GameRenderer renderer;
-
+    private final AbstractGameRenderer renderer;
     private Timeline timer;
 
-    public SnakeGame(GameOptions options, Pane container) {
-        this.options = options;
+    private EventTarget eventTarget;
+
+    private boolean isRunning;
+    private boolean isPaused;
+
+    private Snake.Direction currentDirection;
+    private Snake snake;
+
+    public SnakeGame(Pane container) {
+        this.options = GameOptions.getInstance();
         this.container = container;
-        this.renderer = new DefaultRenderer(options);
+        this.renderer = new DefaultRenderer(this.options);
+
+        this.isPaused = false;
+
+        this.currentDirection = Snake.Direction.RIGHT;
+        this.snake = new Snake();
 
         this.initGame();
     }
 
-    private void initGame() {
+    public void updateOptions(GameOptions options) {
+        this.cleanup();
+        this.options = options;
         this.initContainer();
     }
 
-    public void updateOptions(GameOptions options) {
-        this.options = options;
+    private void initGame() {
         this.initContainer();
+        this.initTimer();
+        this.initKeyListener();
     }
 
     private void initContainer() {
@@ -60,18 +84,116 @@ public class SnakeGame {
         container.getChildren().add(grid);
     }
 
-    public void startGame() {
+    private void initTimer() {
         this.timer = new Timeline(
-            new KeyFrame(Duration.millis(500), event -> {
-                renderer.update();
-            })
+            new KeyFrame(Duration.millis(this.options.getTickSpeed()), this::gameLoop)
         );
-
         this.timer.setCycleCount(Timeline.INDEFINITE);
+    }
+
+    private void initKeyListener() {
+        this.eventTarget = Optional
+            .<EventTarget>ofNullable(this.container.getScene())
+            .orElse(this.container);
+
+        if(this.eventTarget == this.container) {
+            this.container.setFocusTraversable(true);
+        }
+
+        this.eventTarget.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyEvent);
+    }
+
+    public void startGame() {
+        this.isRunning = true;
         this.timer.play();
     }
 
-    public void update() {
+    public void stopGame() {
+        this.isRunning = false;
+        this.cleanup();
+    }
 
+    public void cleanup() {
+        this.timer.stop();
+        this.eventTarget.removeEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyEvent);
+        this.container.getChildren().clear();
+    }
+
+    private void gameLoop(ActionEvent event) {
+        this.updateEntities();
+        this.updateData();
+        renderer.update(this.getEntities());
+    }
+
+    private void updateEntities() {
+        this.snake.move(this.currentDirection);
+    }
+
+    private void updateData() {
+
+    }
+
+    private Collection<AbstractEntity> getEntities() {
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.addAll(this.snake.getParts());
+
+        return entities;
+    }
+
+    private void handleKeyEvent(KeyEvent event) {
+        this.handleUpdateDirection(event);
+        this.handlePause(event);
+        event.consume();
+    }
+
+    private void handleUpdateDirection(KeyEvent event) {
+        switch (event.getCode()) {
+            case KeyCode.UP:
+            case KeyCode.W:
+                this.updateDirection(Snake.Direction.UP);
+                break;
+
+            case KeyCode.DOWN:
+            case KeyCode.S:
+                this.updateDirection(Snake.Direction.DOWN);
+                break;
+
+            case LEFT:
+            case KeyCode.A:
+                this.updateDirection(Snake.Direction.LEFT);
+                break;
+
+            case KeyCode.RIGHT:
+            case KeyCode.D:
+                this.updateDirection(Snake.Direction.RIGHT);
+                break;
+        }
+    }
+
+    private void updateDirection(Snake.Direction newDirection) {
+        if(
+            this.currentDirection == Snake.Direction.UP    && newDirection == Snake.Direction.DOWN  ||
+            this.currentDirection == Snake.Direction.DOWN  && newDirection == Snake.Direction.UP    ||
+            this.currentDirection == Snake.Direction.LEFT  && newDirection == Snake.Direction.RIGHT ||
+            this.currentDirection == Snake.Direction.RIGHT && newDirection == Snake.Direction.LEFT
+        ) {
+            return;
+        }
+
+        this.currentDirection = newDirection;
+    }
+
+    private void handlePause(KeyEvent event) {
+        if(event.getCode() != KeyCode.P) {
+            return;
+        }
+
+        this.isPaused = !this.isPaused;
+
+        if(this.isPaused) {
+            this.timer.stop();
+        } else {
+            this.timer.play();
+        }
     }
 }
