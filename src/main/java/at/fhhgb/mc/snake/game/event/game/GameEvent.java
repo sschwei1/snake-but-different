@@ -1,9 +1,9 @@
-package at.fhhgb.mc.snake.game.event;
+package at.fhhgb.mc.snake.game.event.game;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 
 public abstract class GameEvent {
-    public enum EventType {
+    public enum GameEventType {
         GROWTH, DEATH, POINTS
     }
 
@@ -17,5 +17,5 @@ public abstract class GameEvent {
         return this.source;
     }
 
-    public abstract EventType getEventType();
+    public abstract GameEventType getEventType();
 }

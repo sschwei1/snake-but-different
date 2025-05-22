@@ -3,9 +3,13 @@ package at.fhhgb.mc.snake.game;
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.entity.FoodEntity;
 import at.fhhgb.mc.snake.game.entity.SnakePartEntity;
-import at.fhhgb.mc.snake.game.event.GameEvent;
-import at.fhhgb.mc.snake.game.event.GrowthEvent;
-import at.fhhgb.mc.snake.game.event.PointsEvent;
+import at.fhhgb.mc.snake.game.event.game.GameEvent;
+import at.fhhgb.mc.snake.game.event.game.GrowthEvent;
+import at.fhhgb.mc.snake.game.event.game.PointsEvent;
+import at.fhhgb.mc.snake.game.event.update.GameOverEvent;
+import at.fhhgb.mc.snake.game.event.update.PointsChangeEvent;
+import at.fhhgb.mc.snake.game.event.update.SnakeGrowthEvent;
+import at.fhhgb.mc.snake.game.event.update.UpdateEvent;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.renderer.DefaultRenderer;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
@@ -23,10 +27,11 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.util.*;
-import java.util.function.IntConsumer;
+import java.util.function.Consumer;
 
 public class SnakeGame {
     private GameOptions options;
+
     private final Pane container;
     private AbstractGameRenderer renderer;
     private Timeline timer;
@@ -34,7 +39,14 @@ public class SnakeGame {
     private EventHandler<KeyEvent> keyEventHandler;
     private EventTarget eventTarget;
 
-    private IntConsumer onPointsUpdate;
+    private Consumer<PointsChangeEvent> onPointsUpdate;
+    private Consumer<GameOverEvent> onGameOver;
+    private Consumer<SnakeGrowthEvent> onSnakeGrowth;
+
+    // TODO: not yet implemented update events
+    private Consumer<UpdateEvent> onGameStart;
+    private Consumer<UpdateEvent> onGamePause;
+    private Consumer<UpdateEvent> onGameResume;
 
     private Random random;
     private boolean isRunning;
@@ -49,8 +61,6 @@ public class SnakeGame {
     public SnakeGame(Pane container) {
         this.options = GameOptions.getInstance();
         this.container = container;
-
-        this.onPointsUpdate = null;
         this.initGame();
     }
 
@@ -80,6 +90,10 @@ public class SnakeGame {
         this.snake = new Snake();
         this.score = 0;
         this.placedFood = new LinkedList<>();
+
+        this.onPointsUpdate = null;
+        this.onGameOver = null;
+        this.onSnakeGrowth = null;
     }
 
     private void initContainer() {
@@ -139,12 +153,17 @@ public class SnakeGame {
         this.timer.play();
     }
 
-    public void stopGame() {
+    private void endGame() {
         this.isRunning = false;
-        this.cleanup();
+        this.timer.stop();
+
+        if(this.onGameOver != null) {
+            this.onGameOver.accept(new GameOverEvent(this.score, this.snake));
+        }
     }
 
     public void cleanup() {
+        this.isRunning = false;
         this.timer.stop();
         this.eventTarget.removeEventHandler(KeyEvent.KEY_PRESSED, this.keyEventHandler);
         this.container.getChildren().clear();
@@ -169,7 +188,7 @@ public class SnakeGame {
         int foodX = foodPos % this.options.getGameWidth();
         int foodY = foodPos / this.options.getGameWidth();
 
-        this.placedFood.add(new FoodEntity(foodX, foodY));
+        this.placedFood.add(new FoodEntity(foodX, foodY, 5, 100));
     }
 
     private void gameLoop(ActionEvent event) {
@@ -214,8 +233,9 @@ public class SnakeGame {
     private void consumeEvents(List<GameEvent> events) {
         for(GameEvent event : events) {
             switch(event.getEventType()) {
-                case POINTS: handlePointsEvent(event);
-                case GROWTH: handleGrowthEvent(event);
+                case POINTS: handlePointsEvent(event);  break;
+                case GROWTH: handleGrowthEvent(event);  break;
+                case DEATH:  handleDeathEvent();        break;
             }
         }
     }
@@ -230,20 +250,35 @@ public class SnakeGame {
     private void handlePointsEvent(GameEvent event) {
         if(!(event instanceof PointsEvent pointsEvent)) return;
 
-        this.score += pointsEvent.getAmount();
+        this.score += pointsEvent.getPointsChange();
 
         if(this.onPointsUpdate != null) {
-            this.onPointsUpdate.accept(this.score);
+            this.onPointsUpdate.accept(
+                new PointsChangeEvent(this.score, pointsEvent.getPointsChange())
+            );
         }
     }
 
     private void handleGrowthEvent(GameEvent event) {
         if(!(event instanceof GrowthEvent growthEvent)) return;
 
-        this.snake.increaseSizeBy(growthEvent.getAmount());
+        this.snake.increaseSizeBy(growthEvent.getGrowthSize());
+
+        if(this.onSnakeGrowth != null) {
+            this.onSnakeGrowth.accept(
+                new SnakeGrowthEvent(this.snake.getParts().size(), growthEvent.getGrowthSize())
+            );
+        }
+    }
+
+    private void handleDeathEvent() {
+        GLog.error("Game Over");
+        this.endGame();
     }
 
     private void handleKeyEvent(KeyEvent event) {
+        if(!this.isRunning) return;
+
         this.handleUpdateDirection(event);
         this.handlePause(event);
         event.consume();
@@ -302,7 +337,15 @@ public class SnakeGame {
         }
     }
 
-    public void setOnPointsUpdate(IntConsumer onPointsUpdate) {
+    public void setOnPointsUpdate(Consumer<PointsChangeEvent> onPointsUpdate) {
         this.onPointsUpdate = onPointsUpdate;
+    }
+
+    public void setOnGameOver(Consumer<GameOverEvent> onGameOver) {
+        this.onGameOver = onGameOver;
+    }
+
+    public void setOnSnakeGrowth(Consumer<SnakeGrowthEvent> onSnakeGrowth) {
+        this.onSnakeGrowth = onSnakeGrowth;
     }
 }

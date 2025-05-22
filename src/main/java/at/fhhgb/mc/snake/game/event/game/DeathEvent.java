@@ -1,4 +1,4 @@
-package at.fhhgb.mc.snake.game.event;
+package at.fhhgb.mc.snake.game.event.game;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 
@@ -8,7 +8,7 @@ public class DeathEvent extends GameEvent {
     }
 
     @Override
-    public EventType getEventType() {
-        return EventType.DEATH;
+    public GameEventType getEventType() {
+        return GameEventType.DEATH;
     }
 }

@@ -1,8 +1,8 @@
 package at.fhhgb.mc.snake.game.entity;
 
-import at.fhhgb.mc.snake.game.event.GameEvent;
-import at.fhhgb.mc.snake.game.event.GrowthEvent;
-import at.fhhgb.mc.snake.game.event.PointsEvent;
+import at.fhhgb.mc.snake.game.event.game.GameEvent;
+import at.fhhgb.mc.snake.game.event.game.GrowthEvent;
+import at.fhhgb.mc.snake.game.event.game.PointsEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
 import at.fhhgb.mc.snake.log.GLog;

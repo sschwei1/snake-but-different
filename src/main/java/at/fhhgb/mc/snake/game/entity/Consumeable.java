@@ -1,6 +1,6 @@
 package at.fhhgb.mc.snake.game.entity;
 
-import at.fhhgb.mc.snake.game.event.GameEvent;
+import at.fhhgb.mc.snake.game.event.game.GameEvent;
 
 import java.util.List;
 

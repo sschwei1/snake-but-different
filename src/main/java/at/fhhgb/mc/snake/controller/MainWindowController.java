@@ -25,11 +25,11 @@ public class MainWindowController {
     @FXML
     protected void onStartButtonClick() {
         if(this.runningGame != null) {
-            this.runningGame.stopGame();
+            this.runningGame.cleanup();
         }
 
         this.runningGame = new SnakeGame(gameContainer);
-        this.runningGame.setOnPointsUpdate(score::set);
+        this.runningGame.setOnPointsUpdate(event -> this.score.set(event.getTotalPoints()));
         this.runningGame.startGame();
     }
 
