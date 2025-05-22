@@ -3,6 +3,7 @@ package at.fhhgb.mc.snake.game;
 import at.fhhgb.mc.snake.game.entity.SnakePartEntity;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.struct.Point2D;
+import at.fhhgb.mc.snake.log.GLog;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class Snake {
 
     public Snake() {
         this.options = GameOptions.getInstance();
+        GLog.info("Init Snake: " + options.getInitialSnakeLength());
         this.initSnake(options.getInitialSnakeLength());
     }
 
@@ -26,10 +28,6 @@ public class Snake {
     }
 
     public void increaseSize() {
-        if(this.parts.size() == 1) {
-
-        }
-
         if(!this.parts.isEmpty()) {
             SnakePartEntity newPart = this.parts.getLast().clone();
             this.parts.add(newPart);
@@ -57,12 +55,15 @@ public class Snake {
             throw new IllegalStateException("Unable to move empty snake.");
         }
 
-        for(int i = this.parts.size() - 1; i > 0; i--) {
-            SnakePartEntity prevPart = this.parts.get(i - 1);
-            this.parts.get(i).setPosition(prevPart.getPosition().clone());
-        }
+        SnakePartEntity head = this.parts.getFirst();
 
-        this.parts.getFirst().getPosition().move(direction);
+        if(this.parts.size() > 1) {
+            SnakePartEntity partToMove = this.parts.getLast();
+            partToMove.setPosition(head.getPosition().clone());
+            this.parts.removeLast();
+            this.parts.add(1, partToMove);        }
+
+        head.getPosition().move(direction);
     }
 
     public List<SnakePartEntity> getParts() {

@@ -2,6 +2,7 @@ package at.fhhgb.mc.snake.game.renderer;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.options.GameOptions;
+import at.fhhgb.mc.snake.log.GLog;
 
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class DefaultRenderer extends AbstractGameRenderer {
 
     @Override
     public void update(List<AbstractEntity> entities) {
+        GLog.info("Start Rendering");
         AbstractEntity head = null;
 
         for(GameCell[] cellArr : this.gameGrid) {
@@ -51,12 +53,14 @@ public class DefaultRenderer extends AbstractGameRenderer {
             }
 
             GameCell cell = this.getCellAt(e.getPosition());
-            cell.addEntity(e);
+            cell.setState(e);
         }
 
         if(head != null) {
             GameCell cell = this.getCellAt(head.getPosition());
             cell.setState(GameCell.State.SNAKE_HEAD);
         }
+
+        GLog.info("Stop Rendering");
     }
 }

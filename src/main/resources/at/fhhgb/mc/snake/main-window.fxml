@@ -45,7 +45,7 @@
         <HBox styleClass="footer">
             <HBox styleClass="footer-element">
                 <Label text="Points: "/>
-                <Label text="100" />
+                <Label fx:id="gamePoints" />
             </HBox>
             <Label text="Some Text" styleClass="footer-element" />
         </HBox>

@@ -1,9 +1,12 @@
 package at.fhhgb.mc.snake.game.event;
 
+import at.fhhgb.mc.snake.game.entity.AbstractEntity;
+
 public class GrowthEvent extends GameEvent {
     private final int amount;
 
-    public GrowthEvent(int amount) {
+    public GrowthEvent(AbstractEntity source, int amount) {
+        super(source);
         this.amount = amount;
     }
 

@@ -72,9 +72,9 @@ public class GameOptions {
     public static GameOptions resetToDefault() {
         GameOptions defaultOptions = new GameOptions();
         defaultOptions.tickSpeed = 100;
-        defaultOptions.gameWidth = 25;
-        defaultOptions.gameHeight = 25;
-        defaultOptions.initialSnakeLength = 100;
+        defaultOptions.gameWidth = 10;
+        defaultOptions.gameHeight = 10;
+        defaultOptions.initialSnakeLength = 1;
         defaultOptions.startingPosition = new Point2D(1,1);
 
         return updateOptions(defaultOptions);

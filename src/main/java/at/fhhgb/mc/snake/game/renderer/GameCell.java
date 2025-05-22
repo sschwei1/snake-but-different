@@ -12,7 +12,6 @@ public class GameCell extends Pane {
         EMPTY, FOOD, SNAKE_HEAD, SNAKE, WALL
     }
 
-    private List<AbstractEntity> entities;
     private State state;
 
     public GameCell() {
@@ -21,8 +20,6 @@ public class GameCell extends Pane {
 
     public GameCell(State state) {
         this.setState(state);
-
-        this.entities = new ArrayList<>();
 
         this.setBorder(new Border(
             new BorderStroke(
@@ -34,17 +31,12 @@ public class GameCell extends Pane {
         ));
     }
 
-    public void addEntity(AbstractEntity entity) {
-        this.entities.add(entity);
-        this.setState(entity.getType());
-    }
-
-    public List<AbstractEntity> getEntities() {
-        return this.entities;
-    }
-
     public State getState() {
         return state;
+    }
+
+    public GameCell setState(AbstractEntity entity) {
+        return this.setState(entity.getType());
     }
 
     public GameCell setState(State state) {
@@ -61,7 +53,6 @@ public class GameCell extends Pane {
     }
 
     public void clear() {
-        this.entities.clear();
         this.setState(State.EMPTY);
     }
 

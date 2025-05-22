@@ -80,6 +80,14 @@ public class Point2D implements Cloneable {
         }
     }
 
+    public int asInt() {
+        if(this.maxX <= 0 || this.maxY <= 0) {
+            throw new IllegalStateException("Cannot convert to int without maxX and maxY set.");
+        }
+
+        return this.x + this.y * this.maxX;
+    }
+
     @Override
     public Point2D clone() {
         try {
@@ -87,5 +95,17 @@ public class Point2D implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public String toString() {
+        return String.format("Point2D(%d, %d)", this.x, this.y);
+    }
+
+    public boolean equals(Point2D point) {
+        if(point == null) {
+            return false;
+        }
+
+        return this.x == point.x && this.y == point.y;
     }
 }

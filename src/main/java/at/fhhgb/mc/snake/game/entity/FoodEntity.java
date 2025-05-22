@@ -5,6 +5,7 @@ import at.fhhgb.mc.snake.game.event.GrowthEvent;
 import at.fhhgb.mc.snake.game.event.PointsEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
+import at.fhhgb.mc.snake.log.GLog;
 
 import java.util.List;
 
@@ -24,12 +25,16 @@ public class FoodEntity extends AbstractEntity {
         super(position);
         this.sizeIncrease = sizeIncrease;
         this.points = points;
+
+        GLog.info("Init Food");
     }
 
     public FoodEntity(int x, int y, int sizeIncrease, int points) {
         super(x, y);
         this.sizeIncrease = sizeIncrease;
         this.points = points;
+
+        GLog.info("Init Food");
     }
 
     public int getSizeIncrease() {
@@ -58,8 +63,8 @@ public class FoodEntity extends AbstractEntity {
     @Override
     public List<GameEvent> onConsume() {
         return List.of(
-            new GrowthEvent(this.sizeIncrease),
-            new PointsEvent(this.points)
+            new GrowthEvent(this, this.sizeIncrease),
+            new PointsEvent(this, this.points)
         );
     }
 }

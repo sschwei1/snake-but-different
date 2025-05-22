@@ -3,6 +3,7 @@ module at.fhhgb.mc.snake {
     requires javafx.fxml;
     requires atlantafx.base;
     requires java.desktop;
+    requires java.logging;
 
 
     opens at.fhhgb.mc.snake to javafx.fxml;

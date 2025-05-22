@@ -2,23 +2,35 @@ package at.fhhgb.mc.snake.controller;
 
 import at.fhhgb.mc.snake.game.SnakeGame;
 import at.fhhgb.mc.snake.game.options.GameOptions;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 public class MainWindowController {
+    @FXML private Label gamePoints;
     @FXML private Pane gameContainer;
+
+    private final IntegerProperty score = new SimpleIntegerProperty(0);
+    private SnakeGame runningGame;
 
     @FXML
     public void initialize() {
-        System.out.println("MainWindowController initialized");
+        this.gamePoints.textProperty().bind(score.asString());
+        this.runningGame = null;
     }
 
     @FXML
     protected void onStartButtonClick() {
-        SnakeGame snakeGame = new SnakeGame(gameContainer);
-        snakeGame.startGame();
-        System.out.println("Start button clicked");
+        if(this.runningGame != null) {
+            this.runningGame.stopGame();
+        }
+
+        this.runningGame = new SnakeGame(gameContainer);
+        this.runningGame.setOnPointsUpdate(score::set);
+        this.runningGame.startGame();
     }
 
     @FXML

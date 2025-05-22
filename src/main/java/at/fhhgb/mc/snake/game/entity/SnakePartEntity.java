@@ -2,6 +2,7 @@ package at.fhhgb.mc.snake.game.entity;
 
 import at.fhhgb.mc.snake.game.event.DeathEvent;
 import at.fhhgb.mc.snake.game.event.GameEvent;
+import at.fhhgb.mc.snake.game.event.PointsEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
 
@@ -41,7 +42,7 @@ public class SnakePartEntity extends AbstractEntity implements Cloneable {
         }
 
         return List.of(
-            new DeathEvent()
+            new DeathEvent(this)
         );
     }
 
