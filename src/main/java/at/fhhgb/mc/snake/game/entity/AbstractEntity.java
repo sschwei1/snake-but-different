@@ -1,12 +1,12 @@
 package at.fhhgb.mc.snake.game.entity;
 
-import at.fhhgb.mc.snake.game.event.game.GameEvent;
+import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
 
 import java.util.List;
 
-public abstract class AbstractEntity implements Consumeable {
+public abstract class AbstractEntity implements Consumable {
     protected Point2D position;
 
     public AbstractEntity(Point2D position) {
@@ -27,5 +27,5 @@ public abstract class AbstractEntity implements Consumeable {
     }
 
     public abstract GameCell.State getType();
-    public abstract List<GameEvent> onConsume();
+    public abstract List<EntityEvent> onConsume();
 }

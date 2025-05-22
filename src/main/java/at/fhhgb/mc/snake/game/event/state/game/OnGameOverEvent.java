@@ -1,12 +1,13 @@
-package at.fhhgb.mc.snake.game.event.update;
+package at.fhhgb.mc.snake.game.event.state.game;
 
 import at.fhhgb.mc.snake.game.Snake;
+import at.fhhgb.mc.snake.game.event.state.StateEvent;
 
-public class GameOverEvent extends UpdateEvent {
+public class OnGameOverEvent extends StateEvent {
     private final int totalPoints;
     private final Snake snake;
 
-    public GameOverEvent(int totalPoints, Snake snake) {
+    public OnGameOverEvent(int totalPoints, Snake snake) {
         this.totalPoints = totalPoints;
         this.snake = snake;
     }
@@ -20,7 +21,7 @@ public class GameOverEvent extends UpdateEvent {
     }
 
     @Override
-    public UpdateEventType getType() {
-        return UpdateEventType.GAME_OVER;
+    public StateEventType getType() {
+        return StateEventType.GAME_OVER;
     }
 }

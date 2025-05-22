@@ -7,7 +7,7 @@ import at.fhhgb.mc.snake.game.struct.Point2D;
 import java.util.List;
 
 public abstract class AbstractGameRenderer {
-    protected GameOptions options;
+    protected final GameOptions options;
 
     public AbstractGameRenderer(GameOptions options) {
         this.options = options;
@@ -19,5 +19,5 @@ public abstract class AbstractGameRenderer {
 
     public abstract GameCell[][] getGameGrid();
     public abstract GameCell getCellAt(int x, int y);
-    public abstract void update(List<AbstractEntity> entites);
+    public abstract void update(List<AbstractEntity> entities);
 }

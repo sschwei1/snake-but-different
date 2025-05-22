@@ -1,7 +1,6 @@
 package at.fhhgb.mc.snake.game.struct;
 
 import at.fhhgb.mc.snake.game.Snake;
-import at.fhhgb.mc.snake.game.options.GameOptions;
 
 public class Point2D implements Cloneable {
     private int x;

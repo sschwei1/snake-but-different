@@ -54,9 +54,4 @@ public class GameCell extends Pane {
     }
 
     // TODO: Fix resizing always remain square problem
-//    @Override
-//    protected void layoutChildren() {
-//        double size = Math.min(getWidth(), getHeight());
-//        this.resize(size, size);
-//    }
 }

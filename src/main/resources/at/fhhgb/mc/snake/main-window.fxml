@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
 <BorderPane
         xmlns:fx="http://javafx.com/fxml"
         xmlns="http://javafx.com/javafx/21.0.0"
@@ -52,6 +53,9 @@
                     <Label text="Snake Size: " />
                     <Label fx:id="gameOverSize" />
                 </HBox>
+                <VBox styleClass="button-container">
+                    <Button onAction="#onStartButtonClick">Restart</Button>
+                </VBox>
             </VBox>
         </StackPane>
     </center>

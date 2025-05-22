@@ -1,8 +1,8 @@
 package at.fhhgb.mc.snake.game.entity;
 
-import at.fhhgb.mc.snake.game.event.game.GameEvent;
-import at.fhhgb.mc.snake.game.event.game.GrowthEvent;
-import at.fhhgb.mc.snake.game.event.game.PointsEvent;
+import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
+import at.fhhgb.mc.snake.game.event.entity.EntityGrowthEvent;
+import at.fhhgb.mc.snake.game.event.entity.EntityPointsEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
 import at.fhhgb.mc.snake.log.GLog;
@@ -10,8 +10,8 @@ import at.fhhgb.mc.snake.log.GLog;
 import java.util.List;
 
 public class FoodEntity extends AbstractEntity {
-    private int sizeIncrease;
-    private int points;
+    private final int sizeIncrease;
+    private final int points;
 
     public FoodEntity(Point2D position) {
         this(position, 1, 100);
@@ -37,34 +37,16 @@ public class FoodEntity extends AbstractEntity {
         GLog.info("Init Food");
     }
 
-    public int getSizeIncrease() {
-        return this.sizeIncrease;
-    }
-
-    public FoodEntity setSizeIncrease(int sizeIncrease) {
-        this.sizeIncrease = sizeIncrease;
-        return this;
-    }
-
-    public int getPoints() {
-        return this.points;
-    }
-
-    public FoodEntity setPoints(int points) {
-        this.points = points;
-        return this;
-    }
-
     @Override
     public GameCell.State getType() {
         return GameCell.State.FOOD;
     }
 
     @Override
-    public List<GameEvent> onConsume() {
+    public List<EntityEvent> onConsume() {
         return List.of(
-            new GrowthEvent(this, this.sizeIncrease),
-            new PointsEvent(this, this.points)
+            new EntityGrowthEvent(this, this.sizeIncrease),
+            new EntityPointsEvent(this, this.points)
         );
     }
 }

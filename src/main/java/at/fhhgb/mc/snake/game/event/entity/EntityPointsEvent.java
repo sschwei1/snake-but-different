@@ -1,11 +1,11 @@
-package at.fhhgb.mc.snake.game.event.game;
+package at.fhhgb.mc.snake.game.event.entity;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 
-public class PointsEvent extends GameEvent {
+public class EntityPointsEvent extends EntityEvent {
     private final int pointsChange;
 
-    public PointsEvent(AbstractEntity source, int pointsChange) {
+    public EntityPointsEvent(AbstractEntity source, int pointsChange) {
         super(source);
         this.pointsChange = pointsChange;
     }
@@ -15,7 +15,7 @@ public class PointsEvent extends GameEvent {
     }
 
     @Override
-    public GameEventType getEventType() {
-        return GameEventType.POINTS;
+    public EntityEventType getEventType() {
+        return EntityEventType.POINTS;
     }
 }

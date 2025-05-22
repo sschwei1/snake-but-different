@@ -6,13 +6,24 @@
     -fx-padding: 0 20px 0 0;
 }
 
-.game-over-overlay {
-    -fx-background-color: rgba(0, 0, 0, 0.7);
+.button-container {
     -fx-alignment: center;
-    -fx-font-size: 50px;
+    -fx-padding: 24px 0 0 0;
+}
+
+.game-over-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-alignment: center;
+    -fx-font-size: 32px;
+    -fx-padding: 0 0 50px 0;
 }
 
 .game-over-overlay > HBox {
     -fx-alignment: center;
     -fx-text-fill: white;
+}
+
+.game-over-overlay > Button {
+    -fx-font-size: 24px;
+    -fx-padding: 10px 20px;
 }

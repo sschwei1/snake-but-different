@@ -1,7 +1,6 @@
 package at.fhhgb.mc.snake.controller;
 
 import at.fhhgb.mc.snake.game.SnakeGame;
-import at.fhhgb.mc.snake.game.options.GameOptions;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -9,7 +8,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class MainWindowController {
@@ -49,14 +47,11 @@ public class MainWindowController {
             this.runningGame.cleanup();
         }
 
-        this.runningGame = new SnakeGame(gameContainer)
-            .setOnPointsUpdate(event -> this.score.set(event.getTotalPoints()))
-            .setOnSnakeGrowth(event -> this.size.set(event.getTotalSize()))
-            .setOnGameOver(event -> {
-                this.showGameOver.set(true);
-                this.score.set(event.getTotalPoints());
-                this.size.set(event.getSnake().getParts().size());
-            });
+        this.runningGame = new SnakeGame(this.gameContainer)
+            .setOnPointsUpdate(event -> this.score.set(event.getTotal()))
+            .setOnSnakeGrowth(event -> this.size.set(event.getTotal()))
+            .setOnGameStart(event -> this.showGameOver.set(false))
+            .setOnGameOver(event -> this.showGameOver.set(true));
 
         this.runningGame.start();
     }

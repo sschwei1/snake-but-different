@@ -1,11 +1,11 @@
-package at.fhhgb.mc.snake.game.event.game;
+package at.fhhgb.mc.snake.game.event.entity;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 
-public class GrowthEvent extends GameEvent {
+public class EntityGrowthEvent extends EntityEvent {
     private final int growthSize;
 
-    public GrowthEvent(AbstractEntity source, int growthSize) {
+    public EntityGrowthEvent(AbstractEntity source, int growthSize) {
         super(source);
         this.growthSize = growthSize;
     }
@@ -15,7 +15,7 @@ public class GrowthEvent extends GameEvent {
     }
 
     @Override
-    public GameEventType getEventType() {
-        return GameEventType.GROWTH;
+    public EntityEventType getEventType() {
+        return EntityEventType.GROWTH;
     }
 }

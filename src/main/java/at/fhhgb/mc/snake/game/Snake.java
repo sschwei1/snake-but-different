@@ -29,8 +29,8 @@ public class Snake {
     private LinkedList<SnakePartEntity> parts;
     private final GameOptions options;
 
-    public Snake() {
-        this.options = GameOptions.getInstance();
+    public Snake(GameOptions options) {
+        this.options = options;
         GLog.info("Init Snake: " + options.getInitialSnakeLength());
         this.initSnake(options.getInitialSnakeLength());
     }
