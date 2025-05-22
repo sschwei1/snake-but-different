@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class SnakeGame {
-    private GameOptions options;
+    private final GameOptions options;
 
     private final Pane container;
     private AbstractGameRenderer renderer;
@@ -59,16 +59,10 @@ public class SnakeGame {
     private int score;
     private List<FoodEntity> placedFood;
 
-    public SnakeGame(Pane container) {
-        this.options = GameOptions.getInstance();
+    public SnakeGame(Pane container, GameOptions options) {
+        this.options = options;
         this.container = container;
         this.initGame();
-    }
-
-    public void updateOptions(GameOptions options) {
-        this.cleanup();
-        this.options = options;
-        this.initContainer();
     }
 
     private void initGame() {
@@ -121,8 +115,8 @@ public class SnakeGame {
             }
         }
 
-        container.getChildren().clear();
-        container.getChildren().add(grid);
+        this.container.getChildren().clear();
+        this.container.getChildren().add(grid);
     }
 
     private void initTimer() {
@@ -225,15 +219,6 @@ public class SnakeGame {
 
         this.snake.move(this.currentDirection);
         GLog.info("End updating Entities");
-    }
-
-    private Snake.Direction inverseDirection(Snake.Direction direction) {
-        return switch (direction) {
-            case UP -> Snake.Direction.DOWN;
-            case DOWN -> Snake.Direction.UP;
-            case LEFT -> Snake.Direction.RIGHT;
-            case RIGHT -> Snake.Direction.LEFT;
-        };
     }
 
     private void updateData() {

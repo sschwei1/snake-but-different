@@ -1,6 +1,7 @@
 package at.fhhgb.mc.snake.controller;
 
 import at.fhhgb.mc.snake.game.SnakeGame;
+import at.fhhgb.mc.snake.game.options.GameOptions;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -47,7 +48,7 @@ public class MainWindowController {
             this.runningGame.cleanup();
         }
 
-        this.runningGame = new SnakeGame(this.gameContainer)
+        this.runningGame = new SnakeGame(this.gameContainer, GameOptions.getInstance())
             .setOnPointsUpdate(event -> this.score.set(event.getTotal()))
             .setOnSnakeGrowth(event -> this.size.set(event.getTotal()))
             .setOnGameStart(event -> this.showGameOver.set(false))

@@ -51,8 +51,7 @@ public class Snake {
         startingPos.setMaxX(options.getGameWidth());
         startingPos.setMaxY(options.getGameHeight());
 
-        SnakePartEntity head = new SnakePartEntity(startingPos);
-        head.setIsHead(true);
+        SnakePartEntity head = new SnakePartEntity(startingPos,true);
 
         this.parts.addFirst(head);
     }
