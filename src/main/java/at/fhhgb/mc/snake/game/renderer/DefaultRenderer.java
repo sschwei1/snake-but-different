@@ -1,6 +1,7 @@
 package at.fhhgb.mc.snake.game.renderer;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
+import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.log.GLog;
 
@@ -9,8 +10,8 @@ import java.util.List;
 public class DefaultRenderer extends AbstractGameRenderer {
     private GameCell[][] gameGrid;
 
-    public DefaultRenderer(GameOptions options) {
-        super(options);
+    public DefaultRenderer(GameOptions options, EntityManager entityManager) {
+        super(options, entityManager);
         this.initGameGrid();
     }
 
@@ -36,7 +37,7 @@ public class DefaultRenderer extends AbstractGameRenderer {
     }
 
     @Override
-    public void update(List<AbstractEntity> entities) {
+    public void update() {
         GLog.info("Start Rendering");
         AbstractEntity head = null;
 
@@ -46,7 +47,7 @@ public class DefaultRenderer extends AbstractGameRenderer {
             }
         }
 
-        for(AbstractEntity e : entities) {
+        for(AbstractEntity e : this.entityManager.getEntities()) {
             if(e.getType() == GameCell.State.SNAKE_HEAD) {
                 head = e;
                 continue;

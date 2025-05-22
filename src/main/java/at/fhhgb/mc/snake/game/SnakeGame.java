@@ -3,6 +3,7 @@ package at.fhhgb.mc.snake.game;
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.entity.FoodEntity;
 import at.fhhgb.mc.snake.game.entity.SnakePartEntity;
+import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
 import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityGrowthEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityPointsEvent;
@@ -57,7 +58,8 @@ public class SnakeGame {
     private Snake.Direction currentDirection;
     private Snake snake;
     private int score;
-    private List<FoodEntity> placedFood;
+
+    private EntityManager entityManager;
 
     public SnakeGame(Pane container, GameOptions options) {
         this.options = options;
@@ -80,12 +82,12 @@ public class SnakeGame {
         this.isPaused = false;
         this.inverseDirection = false;
 
-        this.renderer = new DefaultRenderer(this.options);
+        this.entityManager = new EntityManager();
+        this.renderer = new DefaultRenderer(this.options, this.entityManager);
 
         this.currentDirection = Snake.Direction.RIGHT;
-        this.snake = new Snake(this.options);
+        this.snake = new Snake(this.options, this.entityManager);
         this.score = 0;
-        this.placedFood = new LinkedList<>();
 
         this.onPointsUpdate = null;
         this.onGameOver = null;
@@ -181,7 +183,7 @@ public class SnakeGame {
         this.eventTarget.removeEventHandler(KeyEvent.KEY_PRESSED, this.keyEventHandler);
         this.container.getChildren().clear();
         this.snake.getParts().clear();
-        this.placedFood.clear();
+        this.entityManager.clear();
     }
 
     private void spawnFood() {
@@ -201,13 +203,14 @@ public class SnakeGame {
         int foodX = foodPos % this.options.getGameWidth();
         int foodY = foodPos / this.options.getGameWidth();
 
-        this.placedFood.add(new FoodEntity(foodX, foodY, 5, 100));
+        Point2D foodPosition = new Point2D(foodX, foodY, this.options.getGameWidth(), this.options.getGameHeight());
+        this.entityManager.registerEntity(new FoodEntity(foodPosition, 5, 100));
     }
 
     private void gameLoop(ActionEvent event) {
         this.updateEntities();
         this.updateData();
-        renderer.update(this.getEntities());
+        renderer.update();
     }
 
     private void updateEntities() {
@@ -224,9 +227,7 @@ public class SnakeGame {
     private void updateData() {
         GLog.info("Start updating Data");
         Point2D headPos = this.snake.getParts().getFirst().getPosition();
-        List<AbstractEntity> consumedEntities = this.getEntities().stream()
-            .filter(e -> e.getPosition().equals(headPos))
-            .toList();
+        List<AbstractEntity> consumedEntities = this.entityManager.getEntitiesWithPosition(headPos);
 
         GLog.info("Snake Head: " + headPos);
 
@@ -234,8 +235,8 @@ public class SnakeGame {
             GLog.info("Consume: " + entity.getType());
             this.consumeEvents(entity.onConsume());
 
-            if(entity instanceof FoodEntity && this.placedFood.contains(entity)) {
-                this.placedFood.remove(entity);
+            if(entity instanceof FoodEntity && this.entityManager.has(entity)) {
+                this.entityManager.unregisterEntity(entity);
                 this.spawnFood();
             }
         }
@@ -253,12 +254,12 @@ public class SnakeGame {
         }
     }
 
-    private List<AbstractEntity> getEntities() {
-        ArrayList<AbstractEntity> entities = new ArrayList<>();
-        entities.addAll(this.snake.getParts());
-        entities.addAll(this.placedFood);
-        return entities;
-    }
+//    private List<AbstractEntity> getEntities() {
+//        ArrayList<AbstractEntity> entities = new ArrayList<>();
+//        entities.addAll(this.snake.getParts());
+//        entities.addAll(this.placedFood);
+//        return entities;
+//    }
 
     private void handlePointsEvent(EntityEvent event) {
         if(!(event instanceof EntityPointsEvent pointsEvent)) return;

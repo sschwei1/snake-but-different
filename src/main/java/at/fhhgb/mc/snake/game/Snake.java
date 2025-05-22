@@ -1,6 +1,7 @@
 package at.fhhgb.mc.snake.game;
 
 import at.fhhgb.mc.snake.game.entity.SnakePartEntity;
+import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.struct.Point2D;
 import at.fhhgb.mc.snake.log.GLog;
@@ -28,9 +29,12 @@ public class Snake {
 
     private LinkedList<SnakePartEntity> parts;
     private final GameOptions options;
+    private final EntityManager entityManager;
 
-    public Snake(GameOptions options) {
+    public Snake(GameOptions options, EntityManager entityManager) {
         this.options = options;
+        this.entityManager = entityManager;
+
         GLog.info("Init Snake: " + options.getInitialSnakeLength());
         this.initSnake(options.getInitialSnakeLength());
     }
@@ -44,6 +48,7 @@ public class Snake {
         if(!this.parts.isEmpty()) {
             SnakePartEntity newPart = this.parts.getLast().clone();
             this.parts.add(newPart);
+            this.entityManager.registerEntity(newPart);
             return;
         }
 
@@ -54,6 +59,7 @@ public class Snake {
         SnakePartEntity head = new SnakePartEntity(startingPos,true);
 
         this.parts.addFirst(head);
+        this.entityManager.registerEntity(head);
     }
 
     public void increaseSizeBy(int amount) {
@@ -71,11 +77,24 @@ public class Snake {
 
         if(this.parts.size() > 1) {
             SnakePartEntity partToMove = this.parts.getLast();
-            partToMove.setPosition(head.getPosition().clone());
+            this.movePart(partToMove, head.getPosition().clone());
             this.parts.removeLast();
-            this.parts.add(1, partToMove);        }
+            this.parts.add(1, partToMove);
+        }
 
-        head.getPosition().move(direction);
+        this.movePart(head, direction);
+    }
+
+    private void movePart(SnakePartEntity part, Direction direction) {
+        entityManager.unregisterEntity(part);
+        part.getPosition().move(direction);
+        entityManager.registerEntity(part);
+    }
+
+    private void movePart(SnakePartEntity part, Point2D newPos) {
+        entityManager.unregisterEntity(part);
+        part.setPosition(newPos);
+        entityManager.registerEntity(part);
     }
 
     public List<SnakePartEntity> getParts() {

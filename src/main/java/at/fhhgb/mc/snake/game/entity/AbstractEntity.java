@@ -13,10 +13,6 @@ public abstract class AbstractEntity implements Consumable {
         this.position = position;
     }
 
-    public AbstractEntity(int x, int y) {
-        this.position = new Point2D(x, y);
-    }
-
     public Point2D getPosition() {
         return position;
     }
@@ -28,4 +24,10 @@ public abstract class AbstractEntity implements Consumable {
 
     public abstract GameCell.State getType();
     public abstract List<EntityEvent> onConsume();
+
+    @Override
+    public String toString() {
+        String className = this.getClass().getSimpleName();
+        return className + " [position=" + position + ", type=" + getType() + ", hash=" + this.hashCode() + "]";
+    }
 }

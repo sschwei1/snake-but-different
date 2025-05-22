@@ -14,15 +14,6 @@ public class SnakePartEntity extends AbstractEntity implements Cloneable {
         this(position, false);
     }
 
-    public SnakePartEntity(int x, int y) {
-        this(x, y, false);
-    }
-
-    public SnakePartEntity(int x, int y, boolean isHead) {
-        super(x, y);
-        this.isHead = isHead;
-    }
-
     public SnakePartEntity(Point2D position, boolean isHead) {
         super(position);
         this.isHead = isHead;

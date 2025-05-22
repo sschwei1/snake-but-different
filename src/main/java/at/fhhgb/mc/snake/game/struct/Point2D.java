@@ -2,7 +2,9 @@ package at.fhhgb.mc.snake.game.struct;
 
 import at.fhhgb.mc.snake.game.Snake;
 
-public class Point2D implements Cloneable {
+import java.util.Objects;
+
+public class Point2D implements Cloneable, Comparable<Point2D> {
     private int x;
     private int y;
 
@@ -29,7 +31,13 @@ public class Point2D implements Cloneable {
     }
 
     public Point2D setX(int x) {
-        this.x = x;
+
+        this.x = Math.max(x, 0);
+
+        if(this.maxX > 0 && this.x > this.maxX) {
+            this.maxX = x;
+        }
+
         return this;
     }
 
@@ -38,7 +46,12 @@ public class Point2D implements Cloneable {
     }
 
     public Point2D setY(int y) {
-        this.y = y;
+        this.y = Math.max(y, 0);
+
+        if(this.maxY > 0 && this.y > this.maxY) {
+            this.maxY = y;
+        }
+
         return this;
     }
 
@@ -97,14 +110,26 @@ public class Point2D implements Cloneable {
     }
 
     public String toString() {
-        return String.format("Point2D(%d, %d)", this.x, this.y);
+        return String.format("Point2D(%d, %d, %d, %d)", this.x, this.y, this.maxX, this.maxY);
     }
 
-    public boolean equals(Point2D point) {
-        if(point == null) {
+    @Override
+    public int compareTo(Point2D other) {
+        return Integer.compare(this.asInt(), other.asInt());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Point2D point)) {
             return false;
         }
 
-        return this.x == point.x && this.y == point.y;
+        return this.x == point.x && this.y == point.y &&
+            this.maxX == point.maxX && this.maxY == point.maxY;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.x, this.y, this.maxX, this.maxY);
     }
 }
