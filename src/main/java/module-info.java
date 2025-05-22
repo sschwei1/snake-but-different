@@ -6,8 +6,8 @@ module at.fhhgb.mc.snake {
     requires java.logging;
 
 
-    opens at.fhhgb.mc.snake to javafx.fxml;
     exports at.fhhgb.mc.snake;
     exports at.fhhgb.mc.snake.controller;
+    opens at.fhhgb.mc.snake to javafx.fxml;
     opens at.fhhgb.mc.snake.controller to javafx.fxml;
 }

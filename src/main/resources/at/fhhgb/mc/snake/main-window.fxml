@@ -7,6 +7,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane
         xmlns:fx="http://javafx.com/fxml"
         xmlns="http://javafx.com/javafx/21.0.0"
@@ -38,16 +39,33 @@
     </top>
 
     <center>
-        <StackPane fx:id="gameContainer" />
+        <StackPane>
+            <StackPane fx:id="gameContainer" />
+
+            <VBox fx:id="gameOverOverlay" styleClass="game-over-overlay">
+                <Label text="Game Over!" />
+                <HBox>
+                    <Label text="Your score: " />
+                    <Label fx:id="gameOverPoints" />
+                </HBox>
+                <HBox>
+                    <Label text="Snake Size: " />
+                    <Label fx:id="gameOverSize" />
+                </HBox>
+            </VBox>
+        </StackPane>
     </center>
 
     <bottom>
         <HBox styleClass="footer">
-            <HBox styleClass="footer-element">
+            <HBox>
                 <Label text="Points: "/>
                 <Label fx:id="gamePoints" />
             </HBox>
-            <Label text="Some Text" styleClass="footer-element" />
+            <HBox>
+                <Label text="Size: "/>
+                <Label fx:id="snakeSize" />
+            </HBox>
         </HBox>
     </bottom>
 </BorderPane>

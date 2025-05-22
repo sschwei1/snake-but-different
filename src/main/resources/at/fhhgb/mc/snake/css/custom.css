@@ -2,6 +2,17 @@
     -fx-padding: 10px;
 }
 
-.footer > .footer-element {
+.footer > HBox {
     -fx-padding: 0 20px 0 0;
+}
+
+.game-over-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-alignment: center;
+    -fx-font-size: 50px;
+}
+
+.game-over-overlay > HBox {
+    -fx-alignment: center;
+    -fx-text-fill: white;
 }

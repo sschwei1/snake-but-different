@@ -10,7 +10,20 @@ import java.util.List;
 
 public class Snake {
     public enum Direction {
-        UP, DOWN, LEFT, RIGHT
+        UP, DOWN, LEFT, RIGHT;
+
+        public Direction inverse() {
+            return switch (this) {
+                case UP -> DOWN;
+                case DOWN -> UP;
+                case LEFT -> RIGHT;
+                case RIGHT -> LEFT;
+            };
+        }
+
+        public boolean isInverse(Direction direction) {
+            return this == direction.inverse();
+        }
     }
 
     private LinkedList<SnakePartEntity> parts;

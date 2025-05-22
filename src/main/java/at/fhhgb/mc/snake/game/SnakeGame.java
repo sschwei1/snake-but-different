@@ -6,10 +6,7 @@ import at.fhhgb.mc.snake.game.entity.SnakePartEntity;
 import at.fhhgb.mc.snake.game.event.game.GameEvent;
 import at.fhhgb.mc.snake.game.event.game.GrowthEvent;
 import at.fhhgb.mc.snake.game.event.game.PointsEvent;
-import at.fhhgb.mc.snake.game.event.update.GameOverEvent;
-import at.fhhgb.mc.snake.game.event.update.PointsChangeEvent;
-import at.fhhgb.mc.snake.game.event.update.SnakeGrowthEvent;
-import at.fhhgb.mc.snake.game.event.update.UpdateEvent;
+import at.fhhgb.mc.snake.game.event.update.*;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.renderer.DefaultRenderer;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
@@ -42,15 +39,14 @@ public class SnakeGame {
     private Consumer<PointsChangeEvent> onPointsUpdate;
     private Consumer<GameOverEvent> onGameOver;
     private Consumer<SnakeGrowthEvent> onSnakeGrowth;
-
-    // TODO: not yet implemented update events
-    private Consumer<UpdateEvent> onGameStart;
-    private Consumer<UpdateEvent> onGamePause;
-    private Consumer<UpdateEvent> onGameResume;
+    private Consumer<GameStartEvent> onGameStart;
+    private Consumer<PauseEvent> onGamePause;
+    private Consumer<ResumeEvent> onGameResume;
 
     private Random random;
     private boolean isRunning;
     private boolean isPaused;
+    private boolean inverseDirection;
 
     private Snake.Direction queuedDirection;
     private Snake.Direction currentDirection;
@@ -83,6 +79,7 @@ public class SnakeGame {
         this.random = new Random();
         this.isRunning = false;
         this.isPaused = false;
+        this.inverseDirection = false;
 
         this.renderer = new DefaultRenderer(this.options);
 
@@ -148,12 +145,28 @@ public class SnakeGame {
         this.eventTarget.addEventHandler(KeyEvent.KEY_PRESSED, this.keyEventHandler);
     }
 
-    public void startGame() {
+    public void start() {
         this.isRunning = true;
+        this.updateDataListeners();
+
+        if(this.onGameStart != null) {
+            this.onGameStart.accept(new GameStartEvent());
+        }
+
         this.timer.play();
     }
 
-    private void endGame() {
+    private void updateDataListeners() {
+        if(this.onPointsUpdate != null) {
+            this.onPointsUpdate.accept(new PointsChangeEvent(this.score, 0));
+        }
+
+        if(this.onSnakeGrowth != null) {
+            this.onSnakeGrowth.accept(new SnakeGrowthEvent(this.snake.getParts().size(), 0));
+        }
+    }
+
+    private void end() {
         this.isRunning = false;
         this.timer.stop();
 
@@ -206,6 +219,15 @@ public class SnakeGame {
 
         this.snake.move(this.currentDirection);
         GLog.info("End updating Entities");
+    }
+
+    private Snake.Direction inverseDirection(Snake.Direction direction) {
+        return switch (direction) {
+            case UP -> Snake.Direction.DOWN;
+            case DOWN -> Snake.Direction.UP;
+            case LEFT -> Snake.Direction.RIGHT;
+            case RIGHT -> Snake.Direction.LEFT;
+        };
     }
 
     private void updateData() {
@@ -273,7 +295,7 @@ public class SnakeGame {
 
     private void handleDeathEvent() {
         GLog.error("Game Over");
-        this.endGame();
+        this.end();
     }
 
     private void handleKeyEvent(KeyEvent event) {
@@ -285,36 +307,27 @@ public class SnakeGame {
     }
 
     private void handleUpdateDirection(KeyEvent event) {
-        switch (event.getCode()) {
-            case KeyCode.UP:
-            case KeyCode.W:
-                this.updateQueuedDirection(Snake.Direction.UP);
-                break;
+        Snake.Direction newDirection = switch (event.getCode()) {
+            case W, UP      -> Snake.Direction.UP;
+            case S, DOWN    -> Snake.Direction.DOWN;
+            case A, LEFT    -> Snake.Direction.LEFT;
+            case D, RIGHT   -> Snake.Direction.RIGHT;
+            default -> null;
+        };
 
-            case KeyCode.DOWN:
-            case KeyCode.S:
-                this.updateQueuedDirection(Snake.Direction.DOWN);
-                break;
-
-            case LEFT:
-            case KeyCode.A:
-                this.updateQueuedDirection(Snake.Direction.LEFT);
-                break;
-
-            case KeyCode.RIGHT:
-            case KeyCode.D:
-                this.updateQueuedDirection(Snake.Direction.RIGHT);
-                break;
+        if(newDirection == null) {
+            return;
         }
+
+        if(this.inverseDirection) {
+            newDirection = newDirection.inverse();
+        }
+
+        this.updateQueuedDirection(newDirection);
     }
 
     private void updateQueuedDirection(Snake.Direction newDirection) {
-        if(
-            this.currentDirection == Snake.Direction.UP    && newDirection == Snake.Direction.DOWN  ||
-            this.currentDirection == Snake.Direction.DOWN  && newDirection == Snake.Direction.UP    ||
-            this.currentDirection == Snake.Direction.LEFT  && newDirection == Snake.Direction.RIGHT ||
-            this.currentDirection == Snake.Direction.RIGHT && newDirection == Snake.Direction.LEFT
-        ) {
+        if(newDirection.isInverse(this.currentDirection)) {
             return;
         }
 
@@ -332,20 +345,46 @@ public class SnakeGame {
 
         if(this.isPaused) {
             this.timer.stop();
-        } else {
-            this.timer.play();
+
+            if(this.onGamePause != null) {
+                this.onGamePause.accept(new PauseEvent());
+            }
+        }
+
+        this.timer.play();
+
+        if(this.onGameResume != null) {
+            this.onGameResume.accept(new ResumeEvent());
         }
     }
 
-    public void setOnPointsUpdate(Consumer<PointsChangeEvent> onPointsUpdate) {
+    public SnakeGame setOnPointsUpdate(Consumer<PointsChangeEvent> onPointsUpdate) {
         this.onPointsUpdate = onPointsUpdate;
+        return this;
     }
 
-    public void setOnGameOver(Consumer<GameOverEvent> onGameOver) {
+    public SnakeGame setOnGameOver(Consumer<GameOverEvent> onGameOver) {
         this.onGameOver = onGameOver;
+        return this;
     }
 
-    public void setOnSnakeGrowth(Consumer<SnakeGrowthEvent> onSnakeGrowth) {
+    public SnakeGame setOnSnakeGrowth(Consumer<SnakeGrowthEvent> onSnakeGrowth) {
         this.onSnakeGrowth = onSnakeGrowth;
+        return this;
+    }
+
+    public SnakeGame setOnGameStart(Consumer<GameStartEvent> onGameStart) {
+        this.onGameStart = onGameStart;
+        return this;
+    }
+
+    public SnakeGame setOnPause(Consumer<PauseEvent> onGamePause) {
+        this.onGamePause = onGamePause;
+        return this;
+    }
+
+    public SnakeGame setOnResume(Consumer<ResumeEvent> onGameResume) {
+        this.onGameResume = onGameResume;
+        return this;
     }
 }

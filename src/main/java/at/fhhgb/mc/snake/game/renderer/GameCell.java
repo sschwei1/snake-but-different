@@ -4,9 +4,6 @@ import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GameCell extends Pane {
     public enum State {
         EMPTY, FOOD, SNAKE_HEAD, SNAKE, WALL
@@ -42,11 +39,11 @@ public class GameCell extends Pane {
     public GameCell setState(State state) {
         this.state = state;
         switch (state) {
-            case EMPTY -> this.setStyle(null);
-            case FOOD -> this.setStyle("-fx-background-color: red");
+            case EMPTY      -> this.setStyle(null);
+            case FOOD       -> this.setStyle("-fx-background-color: red");
             case SNAKE_HEAD -> this.setStyle("-fx-background-color: lightgreen");
-            case SNAKE -> this.setStyle("-fx-background-color: green");
-            case WALL -> this.setStyle("-fx-background-color: gray");
+            case SNAKE      -> this.setStyle("-fx-background-color: green");
+            case WALL       -> this.setStyle("-fx-background-color: gray");
         }
 
         return this;
