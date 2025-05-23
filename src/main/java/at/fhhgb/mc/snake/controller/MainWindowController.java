@@ -1,13 +1,15 @@
 package at.fhhgb.mc.snake.controller;
 
+import at.fhhgb.mc.snake.elements.dialog.GameSpeedDialog;
 import at.fhhgb.mc.snake.game.SnakeGame;
-import at.fhhgb.mc.snake.game.options.GameOptions;
+import at.fhhgb.mc.snake.log.GLog;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -44,17 +46,25 @@ public class MainWindowController {
 
     @FXML
     protected void onStartButtonClick() {
-        if(this.runningGame != null) {
-            this.runningGame.cleanup();
+        var dialog = new GameSpeedDialog(this.gameContainer.getScene().getWindow());
+        var result = dialog.showAndWait().orElse(null);
+        if(result == null || result.getResult() == null) {
+            GLog.info(":(");
+        } else {
+            GLog.info(result.getResult());
         }
 
-        this.runningGame = new SnakeGame(this.gameContainer, GameOptions.getInstance())
-            .setOnPointsUpdate(event -> this.score.set(event.getTotal()))
-            .setOnSnakeGrowth(event -> this.size.set(event.getTotal()))
-            .setOnGameStart(event -> this.showGameOver.set(false))
-            .setOnGameOver(event -> this.showGameOver.set(true));
-
-        this.runningGame.start();
+//        if(this.runningGame != null) {
+//            this.runningGame.cleanup();
+//        }
+//
+//        this.runningGame = new SnakeGame(this.gameContainer, GameOptions.getInstance())
+//            .setOnPointsUpdate(event -> this.score.set(event.getTotal()))
+//            .setOnSnakeGrowth(event -> this.size.set(event.getTotal()))
+//            .setOnGameStart(event -> this.showGameOver.set(false))
+//            .setOnGameOver(event -> this.showGameOver.set(true));
+//
+//        this.runningGame.start();
     }
 
     @FXML

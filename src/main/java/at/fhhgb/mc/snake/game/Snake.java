@@ -77,24 +77,12 @@ public class Snake {
 
         if(this.parts.size() > 1) {
             SnakePartEntity partToMove = this.parts.getLast();
-            this.movePart(partToMove, head.getPosition().clone());
+            this.entityManager.moveEntity(partToMove, head.getPosition().clone());
             this.parts.removeLast();
             this.parts.add(1, partToMove);
         }
 
-        this.movePart(head, direction);
-    }
-
-    private void movePart(SnakePartEntity part, Direction direction) {
-        entityManager.unregisterEntity(part);
-        part.getPosition().move(direction);
-        entityManager.registerEntity(part);
-    }
-
-    private void movePart(SnakePartEntity part, Point2D newPos) {
-        entityManager.unregisterEntity(part);
-        part.setPosition(newPos);
-        entityManager.registerEntity(part);
+        this.entityManager.moveEntity(head, direction);
     }
 
     public List<SnakePartEntity> getParts() {

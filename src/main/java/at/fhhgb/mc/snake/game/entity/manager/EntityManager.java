@@ -1,16 +1,15 @@
 package at.fhhgb.mc.snake.game.entity.manager;
 
+import at.fhhgb.mc.snake.game.Snake;
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
-import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
-import at.fhhgb.mc.snake.log.GLog;
 
 import java.util.*;
 
 public class EntityManager {
-    private class DummyEntity extends AbstractEntity {
+    private static class DummyEntity extends AbstractEntity {
         private final int hash;
 
         public DummyEntity(Point2D position, int hash) {
@@ -54,6 +53,28 @@ public class EntityManager {
 
     public boolean has(AbstractEntity entity) {
         return this.entities.contains(entity);
+    }
+
+    public void moveEntity(AbstractEntity entity, Point2D newPosition) {
+        if(!this.has(entity)) {
+            entity.setPosition(newPosition);
+            return;
+        }
+
+        this.unregisterEntity(entity);
+        entity.setPosition(newPosition);
+        this.registerEntity(entity);
+    }
+
+    public void moveEntity(AbstractEntity entity, Snake.Direction direction) {
+        if(!this.has(entity)) {
+            entity.getPosition().move(direction);
+            return;
+        }
+
+        this.unregisterEntity(entity);
+        entity.getPosition().move(direction);
+        this.registerEntity(entity);
     }
 
     public Collection<AbstractEntity> getEntities() {
