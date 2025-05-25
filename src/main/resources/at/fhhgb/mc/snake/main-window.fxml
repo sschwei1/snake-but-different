@@ -19,12 +19,14 @@
         <MenuBar>
             <Menu mnemonicParsing="false" text="Game">
                 <MenuItem
+                        fx:id="startButton"
                         mnemonicParsing="false"
                         onAction="#onStartButtonClick"
                         text="Start Game"
                 />
 
                 <MenuItem
+                        fx:id="exitButton"
                         mnemonicParsing="false"
                         onAction="#onExitButtonClick"
                         text="Exit"
@@ -32,7 +34,9 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Preferences">
                 <MenuItem
+                        fx:id="gameSpeedButton"
                         mnemonicParsing="false"
+                        onAction="#onGameSpeedButtonClick"
                         text="Game Speed"
                 />
             </Menu>

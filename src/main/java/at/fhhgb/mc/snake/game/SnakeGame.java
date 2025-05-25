@@ -7,6 +7,7 @@ import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
 import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityGrowthEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityPointsEvent;
+import at.fhhgb.mc.snake.game.event.state.StateEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameOverEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameStartEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGamePauseEvent;
@@ -54,7 +55,7 @@ public class SnakeGame {
     private boolean isPaused;
     private boolean inverseDirection;
 
-    private Snake.Direction queuedDirection;
+    private List<Snake.Direction> queuedDirections;
     private Snake.Direction currentDirection;
     private Snake snake;
     private int score;
@@ -70,10 +71,11 @@ public class SnakeGame {
     private void initGame() {
         this.initData();
         this.initContainer();
+        this.initTimer();
         this.initKeyListener();
 
         this.spawnFood();
-        this.initTimer();
+        Objects.requireNonNull(this.renderer).update();
     }
 
     private void initData() {
@@ -85,6 +87,7 @@ public class SnakeGame {
         this.entityManager = new EntityManager();
         this.renderer = new DefaultRenderer(this.options, this.entityManager);
 
+        this.queuedDirections = new LinkedList<>();
         this.currentDirection = Snake.Direction.RIGHT;
         this.snake = new Snake(this.options, this.entityManager);
         this.score = 0;
@@ -92,6 +95,9 @@ public class SnakeGame {
         this.onPointsUpdate = null;
         this.onGameOver = null;
         this.onSnakeGrowth = null;
+        this.onGameStart = null;
+        this.onGamePause = null;
+        this.onGameResume = null;
     }
 
     private void initContainer() {
@@ -149,32 +155,32 @@ public class SnakeGame {
 
     public void start() {
         this.isRunning = true;
-        this.updateDataListeners();
-
-        if(this.onGameStart != null) {
-            this.onGameStart.accept(new OnGameStartEvent());
-        }
+        this.emitInitialData();
+        this.emitStateEvent(this.onGameStart, new OnGameStartEvent());
 
         this.timer.play();
     }
 
-    private void updateDataListeners() {
-        if(this.onPointsUpdate != null) {
-            this.onPointsUpdate.accept(new OnSnakePointsChangeEvent(this.score, 0));
-        }
+    private void emitInitialData() {
+        this.emitStateEvent(
+            this.onPointsUpdate,
+            new OnSnakePointsChangeEvent(this.score, 0)
+        );
 
-        if(this.onSnakeGrowth != null) {
-            this.onSnakeGrowth.accept(new OnSnakeSizeChangeEvent(this.snake.getParts().size(), 0));
-        }
+        this.emitStateEvent(
+            this.onSnakeGrowth,
+            new OnSnakeSizeChangeEvent(this.snake.getSize(), 0)
+        );
     }
 
     private void end() {
         this.isRunning = false;
         this.timer.stop();
 
-        if(this.onGameOver != null) {
-            this.onGameOver.accept(new OnGameOverEvent(this.score, this.snake));
-        }
+        this.emitStateEvent(
+            this.onGameOver,
+            new OnGameOverEvent(this.score, this.snake)
+        );
     }
 
     public void cleanup() {
@@ -188,7 +194,7 @@ public class SnakeGame {
 
     private void spawnFood() {
         int fieldSize = this.options.getGameWidth() * this.options.getGameHeight();
-        int foodPos = this.random.nextInt(fieldSize - this.snake.getParts().size());
+        int foodPos = this.random.nextInt(fieldSize - this.snake.getSize());
 
         List<SnakePartEntity> sorted = this.snake.getParts().stream()
             .sorted(Comparator.comparingInt(p -> p.getPosition().asInt()))
@@ -215,9 +221,8 @@ public class SnakeGame {
 
     private void updateEntities() {
         GLog.info("Start updating Entities");
-        if(this.queuedDirection != null && this.queuedDirection != this.currentDirection) {
-            this.currentDirection = this.queuedDirection;
-            this.queuedDirection = null;
+        if(!this.queuedDirections.isEmpty()) {
+            this.currentDirection = this.queuedDirections.removeFirst();
         }
 
         this.snake.move(this.currentDirection);
@@ -254,23 +259,15 @@ public class SnakeGame {
         }
     }
 
-//    private List<AbstractEntity> getEntities() {
-//        ArrayList<AbstractEntity> entities = new ArrayList<>();
-//        entities.addAll(this.snake.getParts());
-//        entities.addAll(this.placedFood);
-//        return entities;
-//    }
-
     private void handlePointsEvent(EntityEvent event) {
         if(!(event instanceof EntityPointsEvent pointsEvent)) return;
 
         this.score += pointsEvent.getPointsChange();
 
-        if(this.onPointsUpdate != null) {
-            this.onPointsUpdate.accept(
-                new OnSnakePointsChangeEvent(this.score, pointsEvent.getPointsChange())
-            );
-        }
+        this.emitStateEvent(
+            this.onPointsUpdate,
+            new OnSnakePointsChangeEvent(this.score, pointsEvent.getPointsChange())
+        );
     }
 
     private void handleGrowthEvent(EntityEvent event) {
@@ -278,11 +275,10 @@ public class SnakeGame {
 
         this.snake.increaseSizeBy(growthEvent.getGrowthSize());
 
-        if(this.onSnakeGrowth != null) {
-            this.onSnakeGrowth.accept(
-                new OnSnakeSizeChangeEvent(this.snake.getParts().size(), growthEvent.getGrowthSize())
-            );
-        }
+        this.emitStateEvent(
+            this.onSnakeGrowth,
+            new OnSnakeSizeChangeEvent(this.snake.getSize(), growthEvent.getGrowthSize())
+        );
     }
 
     private void handleDeathEvent() {
@@ -319,11 +315,19 @@ public class SnakeGame {
     }
 
     private void updateQueuedDirection(Snake.Direction newDirection) {
-        if(newDirection.isInverse(this.currentDirection)) {
+        if(this.queuedDirections.size() >= 2) {
+            this.queuedDirections.clear();
+        }
+
+        Snake.Direction compareDirection = this.queuedDirections.isEmpty()
+            ? this.currentDirection
+            : this.queuedDirections.getLast();
+
+        if(newDirection.isInverseOrEqual(compareDirection)) {
             return;
         }
 
-        this.queuedDirection = newDirection;
+        this.queuedDirections.add(newDirection);
     }
 
     private void handlePause(KeyEvent event) {
@@ -337,16 +341,17 @@ public class SnakeGame {
 
         if(this.isPaused) {
             this.timer.stop();
-
-            if(this.onGamePause != null) {
-                this.onGamePause.accept(new OnGamePauseEvent());
-            }
+            this.emitStateEvent(this.onGamePause, new OnGamePauseEvent());
+            return;
         }
 
         this.timer.play();
+        this.emitStateEvent(this.onGameResume, new OnGameResumeEvent());
+    }
 
-        if(this.onGameResume != null) {
-            this.onGameResume.accept(new OnGameResumeEvent());
+    private <T extends StateEvent> void emitStateEvent(Consumer<T> eventHandler, T event) {
+        if(eventHandler != null) {
+            eventHandler.accept(event);
         }
     }
 

@@ -25,6 +25,10 @@ public class Snake {
         public boolean isInverse(Direction direction) {
             return this == direction.inverse();
         }
+
+        public boolean isInverseOrEqual(Direction direction) {
+            return this == direction || this.isInverse(direction);
+        }
     }
 
     private LinkedList<SnakePartEntity> parts;
@@ -37,6 +41,10 @@ public class Snake {
 
         GLog.info("Init Snake: " + options.getInitialSnakeLength());
         this.initSnake(options.getInitialSnakeLength());
+    }
+
+    public int getSize() {
+        return this.parts.size();
     }
 
     private void initSnake(int size) {

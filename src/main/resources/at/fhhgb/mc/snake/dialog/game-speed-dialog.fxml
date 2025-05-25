@@ -8,14 +8,21 @@
         xmlns="http://javafx.com/javafx/8.0.171"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="at.fhhgb.mc.snake.controller.dialog.GameSpeedDialogController"
-        spacing="10"
         alignment="CENTER"
 >
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets top="10" right="20" bottom="10" left="20"/>
     </padding>
 
-    <Label text="Custom Dialog Title" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+    <Label
+            text="Speed Settings"
+            style="-fx-font-weight: bold; -fx-font-size: 24; -fx-padding: 0"
+    />
 
-    <TextField fx:id="inputField" promptText="Enter something..."/>
+    <Separator />
+
+    <VBox spacing="10">
+        <Label fx:id="speedSliderLabel" text="Game Speed:" />
+        <Slider fx:id="speedSlider" min="1" max="50" />
+    </VBox>
 </VBox>

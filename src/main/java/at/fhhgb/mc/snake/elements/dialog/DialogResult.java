@@ -20,4 +20,8 @@ public class DialogResult<T> {
     public T getResult() {
         return result;
     }
+
+    public static <T> DialogResult<T> invalid() {
+        return new DialogResult<>(DialogAction.CANCEL, null);
+    }
 }
