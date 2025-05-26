@@ -2,10 +2,11 @@ package at.fhhgb.mc.snake.controller.dialog;
 
 import at.fhhgb.mc.snake.elements.dialog.DialogResult;
 import at.fhhgb.mc.snake.game.options.GameOptions;
-import at.fhhgb.mc.snake.log.GLog;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -37,15 +38,10 @@ public class GameSpeedDialogController extends DialogBaseController<Integer> {
 
     @Override
     public DialogResult<Integer> getResult(ButtonType buttonType) {
-        if(buttonType != ButtonType.OK) {
-            GLog.info("Dialog cancelled");
-            return new DialogResult<>(
-                DialogResult.DialogAction.CANCEL,
-                null
-            );
+        if(buttonType.getButtonData() != ButtonBar.ButtonData.OK_DONE) {
+            return DialogResult.invalid();
         }
 
-        GLog.info("Dialog Submitted");
         return new DialogResult<>(
             DialogResult.DialogAction.OK,
             speedValue.get()

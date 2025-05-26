@@ -9,6 +9,7 @@ module at.fhhgb.mc.snake {
     exports at.fhhgb.mc.snake.controller.dialog;
     exports at.fhhgb.mc.snake.elements.dialog;
     exports at.fhhgb.mc.snake.game.options;
+    exports at.fhhgb.mc.snake.game.struct;
 
     opens at.fhhgb.mc.snake to javafx.fxml;
     opens at.fhhgb.mc.snake.controller to javafx.fxml;

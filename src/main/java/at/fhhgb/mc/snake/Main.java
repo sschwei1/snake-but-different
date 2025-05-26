@@ -17,7 +17,7 @@ public class Main extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("main-window.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
+        stage.setTitle("Snake but different");
         stage.setScene(scene);
 
         stage.setWidth(900);

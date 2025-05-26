@@ -2,8 +2,10 @@ package at.fhhgb.mc.snake.controller;
 
 import at.fhhgb.mc.snake.elements.dialog.DialogResult;
 import at.fhhgb.mc.snake.elements.dialog.GameSpeedDialog;
+import at.fhhgb.mc.snake.elements.dialog.GameStartDialog;
 import at.fhhgb.mc.snake.game.SnakeGame;
 import at.fhhgb.mc.snake.game.options.GameOptions;
+import at.fhhgb.mc.snake.game.options.GameSizeConfig;
 import at.fhhgb.mc.snake.log.GLog;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -58,19 +60,22 @@ public class MainWindowController {
 
     @FXML
     private void onStartButtonClick() {
-        if(this.activeGame != null) {
-            this.activeGame.cleanup();
-        } else {
-            this.gameOverOverlay.visibleProperty().bind(this.gameRunning.not());
+        GameStartDialog gameStartDialog = new GameStartDialog(
+            this.gameContainer.getScene().getWindow(),
+            this.gameOptions
+        );
+        DialogResult<GameSizeConfig> startResult = gameStartDialog.showDialog();
+
+        GLog.info("Button type: " + startResult.getAction());
+
+        if(startResult.getAction() != DialogResult.DialogAction.OK) {
+            GLog.info("Dialog cancelled");
+            return;
         }
 
-        this.activeGame = new SnakeGame(this.gameContainer, this.gameOptions)
-            .setOnPointsUpdate(event -> this.score.set(event.getTotal()))
-            .setOnSnakeGrowth(event -> this.size.set(event.getTotal()))
-            .setOnGameStart(event -> this.gameRunning.set(true))
-            .setOnGameOver(event -> this.gameRunning.set(false));
-
-        this.activeGame.start();
+        GLog.info("Starting game!");
+        this.gameOptions.setGameSizeConfig(startResult.getResult());
+        this.startNewGame();
     }
 
     @FXML
@@ -93,5 +98,21 @@ public class MainWindowController {
 
         GLog.info("New Value: " + speedResult.getResult());
         this.gameOptions.setTickSpeed(speedResult.getResult());
+    }
+
+    private void startNewGame() {
+        if(this.activeGame != null) {
+            this.activeGame.cleanup();
+        } else {
+            this.gameOverOverlay.visibleProperty().bind(this.gameRunning.not());
+        }
+
+        this.activeGame = new SnakeGame(this.gameContainer, this.gameOptions)
+            .setOnPointsUpdate(event -> this.score.set(event.getTotal()))
+            .setOnSnakeGrowth(event -> this.size.set(event.getTotal()))
+            .setOnGameStart(event -> this.gameRunning.set(true))
+            .setOnGameOver(event -> this.gameRunning.set(false));
+
+        this.activeGame.start();
     }
 }

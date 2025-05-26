@@ -5,6 +5,7 @@ import at.fhhgb.mc.snake.controller.dialog.DialogBaseController;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.log.GLog;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.Pane;
@@ -27,10 +28,18 @@ public abstract class DialogBase<T> extends Dialog<DialogResult<T>> {
             this.getDialogPane().setContent(root);
             this.setResultConverter(controller::getResult);
 
-            this.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            this.setButtons(ButtonType.OK, ButtonType.CANCEL);
+
+            Button okButton = (Button) this.getDialogPane().lookupButton(ButtonType.OK);
+            okButton.disableProperty().bind(controller.getInputsValidBinding().not());
         } catch(IOException ex) {
             GLog.error(ex.getMessage());
         }
+    }
+
+    protected void setButtons(ButtonType... buttonTypes) {
+        this.getDialogPane().getButtonTypes().clear();
+        this.getDialogPane().getButtonTypes().setAll(buttonTypes);
     }
 
     public DialogResult<T> showDialog() {

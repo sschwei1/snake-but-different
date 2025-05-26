@@ -6,10 +6,9 @@ public class GameOptions {
     private static GameOptions instance;
 
     private int tickSpeed;
-    private int gameWidth;
-    private int gameHeight;
     private int initialSnakeLength;
-    private Point2D startingPosition;
+
+    private GameSizeConfig gameSizeConfig;
 
     private GameOptions() { }
 
@@ -23,20 +22,15 @@ public class GameOptions {
     }
 
     public int getGameWidth() {
-        return gameWidth;
-    }
-
-    public GameOptions setGameWidth(int gameWidth) {
-        this.gameWidth = gameWidth;
-        return this;
+        return this.gameSizeConfig.width();
     }
 
     public int getGameHeight() {
-        return gameHeight;
+        return this.gameSizeConfig.height();
     }
 
-    public GameOptions setGameHeight(int gameHeight) {
-        this.gameHeight = gameHeight;
+    public GameOptions setGameSizeConfig(GameSizeConfig gameSizeConfig) {
+        this.gameSizeConfig = gameSizeConfig;
         return this;
     }
 
@@ -50,12 +44,7 @@ public class GameOptions {
     }
 
     public Point2D getStartingPosition() {
-        return startingPosition;
-    }
-
-    public GameOptions setStartingPosition(Point2D startingPosition) {
-        this.startingPosition = startingPosition;
-        return this;
+        return this.gameSizeConfig.startingPos();
     }
 
     public static GameOptions updateOptions() {
@@ -72,10 +61,8 @@ public class GameOptions {
     public static GameOptions resetToDefault() {
         GameOptions defaultOptions = new GameOptions();
         defaultOptions.tickSpeed = 50;
-        defaultOptions.gameWidth = 20;
-        defaultOptions.gameHeight = 20;
         defaultOptions.initialSnakeLength = 5;
-        defaultOptions.startingPosition = new Point2D(1,1);
+        defaultOptions.gameSizeConfig = new GameSizeConfig(20, 20, new Point2D(1,1));
 
         return updateOptions(defaultOptions);
     }
