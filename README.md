@@ -1,6 +1,5 @@
 
 # Featurelist
-<hr />
 
 ## Game Mechanics
 - Toggling walls on/off<br/> Walls will show up on the edge of the board if enabled
@@ -23,7 +22,6 @@
 - [Efficient Rendering](#efficient-rendering)
 
 # Design Decisions
-<hr />
 
 ## Food Spawning
 I compared 3 different approaches
@@ -46,6 +44,7 @@ Easy to do, but feels wrong to do so. Will also get more inefficient the entites
 Here we can see the performance of the different approaches for a field of 100x100 cells.<br />
 We can see that the random generation is very efficient for almost all cases, Floyd's algorithm will outperform random generation if the field is filled with more than 99% of elements.
 My algorithm is not bad for a low field population, however it will fall of at a field filled around 10%.<br/>
+
 ![performance_comparison.png](performance_comparison.png)
 
 ### Final implementation
