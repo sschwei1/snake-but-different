@@ -45,9 +45,9 @@
 
     <center>
         <StackPane>
-            <StackPane fx:id="gameContainer" />
+            <StackPane fx:id="gameContainer"/>
 
-            <VBox fx:id="gameOverOverlay" styleClass="game-over-overlay">
+            <VBox fx:id="gameOverOverlay" styleClass="game-overlay">
                 <Label text="Game Over!" />
                 <HBox>
                     <Label text="Your score: " />
@@ -58,8 +58,12 @@
                     <Label fx:id="gameOverSize" />
                 </HBox>
                 <VBox styleClass="button-container">
-                    <Button onAction="#onStartButtonClick">Restart</Button>
+                    <Button onAction="#startNewGame">Restart</Button>
                 </VBox>
+            </VBox>
+
+            <VBox fx:id="gamePauseOverlay" styleClass="game-overlay">
+                <Label text="Game is paused, press 'P' to continue" />
             </VBox>
         </StackPane>
     </center>

@@ -20,6 +20,11 @@ public class SnakePartEntity extends AbstractEntity implements Cloneable {
     }
 
     @Override
+    public int getRenderingPriority() {
+        return this.isHead ? 30 : 10;
+    }
+
+    @Override
     public GameCell.State getType() {
         return this.isHead ?
             GameCell.State.SNAKE_HEAD :

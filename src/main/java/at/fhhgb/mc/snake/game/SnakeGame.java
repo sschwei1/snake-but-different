@@ -2,11 +2,12 @@ package at.fhhgb.mc.snake.game;
 
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.entity.FoodEntity;
-import at.fhhgb.mc.snake.game.entity.SnakePartEntity;
+import at.fhhgb.mc.snake.game.entity.WallEntity;
 import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
 import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityGrowthEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityPointsEvent;
+import at.fhhgb.mc.snake.game.event.entity.EntitySpawnFoodEvent;
 import at.fhhgb.mc.snake.game.event.state.StateEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameOverEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameStartEvent;
@@ -14,6 +15,7 @@ import at.fhhgb.mc.snake.game.event.state.game.OnGamePauseEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameResumeEvent;
 import at.fhhgb.mc.snake.game.event.state.snake.OnSnakePointsChangeEvent;
 import at.fhhgb.mc.snake.game.event.state.snake.OnSnakeSizeChangeEvent;
+import at.fhhgb.mc.snake.game.options.FoodConfiguration;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.renderer.DefaultRenderer;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
@@ -70,11 +72,12 @@ public class SnakeGame {
 
     private void initGame() {
         this.initData();
+        this.initWalls();
         this.initContainer();
         this.initTimer();
         this.initKeyListener();
 
-        this.spawnFood();
+        this.handleSpawnFoodEvent(new EntitySpawnFoodEvent(null, 1));
         Objects.requireNonNull(this.renderer).update();
     }
 
@@ -84,7 +87,7 @@ public class SnakeGame {
         this.isPaused = false;
         this.inverseDirection = false;
 
-        this.entityManager = new EntityManager();
+        this.entityManager = new EntityManager(this.options);
         this.renderer = new DefaultRenderer(this.options, this.entityManager);
 
         this.queuedDirections = new LinkedList<>();
@@ -98,6 +101,28 @@ public class SnakeGame {
         this.onGameStart = null;
         this.onGamePause = null;
         this.onGameResume = null;
+    }
+
+    private void initWalls() {
+        if(!this.options.isWallEnabled()) {
+            return;
+        }
+
+        for(int x = 0; x < this.options.getGameWidth(); x++) {
+            this.registerWall(x, 0);
+            this.registerWall(x, this.options.getGameHeight() - 1);
+        }
+
+        for(int y = 0; y < this.options.getGameHeight(); y++) {
+            this.registerWall(0, y);
+            this.registerWall(this.options.getGameWidth() - 1, y);
+        }
+    }
+
+    private void registerWall(int x, int y) {
+        Point2D wallPos = new Point2D(x, y, this.options.getGameWidth(), this.options.getGameHeight());
+        WallEntity wall = new WallEntity(wallPos);
+        this.entityManager.register(wall);
     }
 
     private void initContainer() {
@@ -174,12 +199,16 @@ public class SnakeGame {
     }
 
     private void end() {
+        this.end(false);
+    }
+
+    private void end(boolean isWin) {
         this.isRunning = false;
         this.timer.stop();
 
         this.emitStateEvent(
             this.onGameOver,
-            new OnGameOverEvent(this.score, this.snake)
+            new OnGameOverEvent(this.score, this.snake, isWin)
         );
     }
 
@@ -192,31 +221,19 @@ public class SnakeGame {
         this.entityManager.clear();
     }
 
-    private void spawnFood() {
-        int fieldSize = this.options.getGameWidth() * this.options.getGameHeight();
-        int foodPos = this.random.nextInt(fieldSize - this.snake.getSize());
-
-        List<SnakePartEntity> sorted = this.snake.getParts().stream()
-            .sorted(Comparator.comparingInt(p -> p.getPosition().asInt()))
-            .toList();
-
-        for(SnakePartEntity part : sorted) {
-            if(part.getPosition().asInt() <= foodPos) {
-                foodPos++;
-            }
-        }
-
-        int foodX = foodPos % this.options.getGameWidth();
-        int foodY = foodPos / this.options.getGameWidth();
-
-        Point2D foodPosition = new Point2D(foodX, foodY, this.options.getGameWidth(), this.options.getGameHeight());
-        this.entityManager.registerEntity(new FoodEntity(foodPosition, 5, 100));
-    }
-
     private void gameLoop(ActionEvent event) {
+        var time = System.currentTimeMillis();
         this.updateEntities();
+        var afterUpdateTime = System.currentTimeMillis();
+        System.out.println("Update Entities Duration: " + (afterUpdateTime - time));
         this.updateData();
+        var afterDataUpdateTime = System.currentTimeMillis();
+        System.out.println("Update Data Duration: " + (afterDataUpdateTime - afterUpdateTime));
         renderer.update();
+        var afterRenderTime = System.currentTimeMillis();
+        System.out.println("Render Duration: " + (afterRenderTime - afterDataUpdateTime));
+        System.out.println("Game loop took: " + (System.currentTimeMillis() - time) + "ms");
+        System.out.println("Total entities: " + this.entityManager.getAll().size());
     }
 
     private void updateEntities() {
@@ -232,7 +249,7 @@ public class SnakeGame {
     private void updateData() {
         GLog.info("Start updating Data");
         Point2D headPos = this.snake.getParts().getFirst().getPosition();
-        List<AbstractEntity> consumedEntities = this.entityManager.getEntitiesWithPosition(headPos);
+        List<AbstractEntity> consumedEntities = this.entityManager.getAllWithPosition(headPos);
 
         GLog.info("Snake Head: " + headPos);
 
@@ -240,9 +257,9 @@ public class SnakeGame {
             GLog.info("Consume: " + entity.getType());
             this.consumeEvents(entity.onConsume());
 
-            if(entity instanceof FoodEntity && this.entityManager.has(entity)) {
-                this.entityManager.unregisterEntity(entity);
-                this.spawnFood();
+            if(entity.shouldRemoveOnConsume()) {
+                GLog.info("Unregister Entity: " + entity);
+                this.entityManager.unregister(entity);
             }
         }
 
@@ -252,9 +269,10 @@ public class SnakeGame {
     private void consumeEvents(List<EntityEvent> events) {
         for(EntityEvent event : events) {
             switch(event.getEventType()) {
-                case POINTS: handlePointsEvent(event);  break;
-                case GROWTH: handleGrowthEvent(event);  break;
-                case DEATH:  handleDeathEvent();        break;
+                case POINTS:     handlePointsEvent(event);      break;
+                case GROWTH:     handleGrowthEvent(event);      break;
+                case DEATH:      handleDeathEvent();            break;
+                case SPAWN_FOOD: handleSpawnFoodEvent(event);   break;
             }
         }
     }
@@ -282,8 +300,38 @@ public class SnakeGame {
     }
 
     private void handleDeathEvent() {
+        if(!this.isRunning) return;
         GLog.info("Game Over");
         this.end();
+    }
+
+    private void handleSpawnFoodEvent(EntityEvent event) {
+        if(!(event instanceof EntitySpawnFoodEvent spawnFoodEvent)) return;
+
+        int fieldSize = this.options.getFieldSize();
+        if(this.snake.getSize() == fieldSize) {
+            this.end(true);
+            return;
+        }
+
+        HashSet<Point2D> availablePositions = this.entityManager.getEmptyPositions();
+
+        for(int i = 0; i < spawnFoodEvent.getAmount() && !availablePositions.isEmpty(); i++) {
+            // get random position from available positions
+            int randomPosIndex = this.random.nextInt(availablePositions.size());
+            Point2D foodPosition = availablePositions.stream()
+                .skip(randomPosIndex)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No available positions for food."));
+
+            int randomFoodIndex = this.random.nextInt(this.options.getAvailableFoods().size());
+            FoodConfiguration.FoodValueConfig foodValueConfig = this.options.getAvailableFoods().get(randomFoodIndex);
+
+            this.entityManager.register(new FoodEntity(
+                foodPosition,
+                foodValueConfig
+            ));
+        }
     }
 
     private void handleKeyEvent(KeyEvent event) {

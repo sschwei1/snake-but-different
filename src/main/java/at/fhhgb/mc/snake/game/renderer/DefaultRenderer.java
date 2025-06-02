@@ -3,24 +3,33 @@ package at.fhhgb.mc.snake.game.renderer;
 import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
 import at.fhhgb.mc.snake.game.options.GameOptions;
+import at.fhhgb.mc.snake.game.struct.Point2D;
 import at.fhhgb.mc.snake.log.GLog;
-
-import java.util.List;
 
 public class DefaultRenderer extends AbstractGameRenderer {
     private GameCell[][] gameGrid;
 
+    private final Point2D offset;
+
     public DefaultRenderer(GameOptions options, EntityManager entityManager) {
         super(options, entityManager);
+
+        this.offset = this.options.isWallEnabled() ?
+            new Point2D(1, 1) :
+            new Point2D(0, 0);
+
         this.initGameGrid();
     }
 
     private void initGameGrid() {
-        this.gameGrid = new GameCell[this.options.getGameWidth()][];
+        int gameWidth = this.options.getGameWidth() + 2 * this.offset.getX();
+        int gameHeight = this.options.getGameHeight() + 2 * this.offset.getY();
 
-        for(int i = 0; i < this.options.getGameWidth(); i++) {
-            this.gameGrid[i] = new GameCell[this.options.getGameHeight()];
-            for(int j = 0; j < this.options.getGameHeight(); j++) {
+        this.gameGrid = new GameCell[gameWidth][gameHeight];
+
+        for(int i = 0; i < gameWidth; i++) {
+            this.gameGrid[i] = new GameCell[gameHeight];
+            for(int j = 0; j < gameHeight; j++) {
                 this.gameGrid[i][j] = new GameCell();
             }
         }
@@ -39,28 +48,16 @@ public class DefaultRenderer extends AbstractGameRenderer {
     @Override
     public void update() {
         GLog.info("Start Rendering");
-        AbstractEntity head = null;
 
-        for(GameCell[] cellArr : this.gameGrid) {
-            for(GameCell cell : cellArr) {
-                cell.clear();
-            }
+        for(Point2D pos : this.entityManager.getPositionsToClear()) {
+            this.getCellAt(pos).clear();
         }
 
-        for(AbstractEntity e : this.entityManager.getEntities()) {
-            if(e.getType() == GameCell.State.SNAKE_HEAD) {
-                head = e;
-                continue;
-            }
-
-            GameCell cell = this.getCellAt(e.getPosition());
-            cell.setState(e);
+        for(AbstractEntity entity : this.entityManager.getDirtyEntities()) {
+            this.getCellAt(entity.getPosition()).setState(entity);
         }
 
-        if(head != null) {
-            GameCell cell = this.getCellAt(head.getPosition());
-            cell.setState(GameCell.State.SNAKE_HEAD);
-        }
+        this.entityManager.resetDirtyCollections();
 
         GLog.info("Stop Rendering");
     }

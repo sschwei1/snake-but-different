@@ -22,6 +22,11 @@ public abstract class AbstractEntity implements Consumable {
         return this;
     }
 
+    public boolean shouldRemoveOnConsume() {
+        return false;
+    }
+
+    public abstract int getRenderingPriority();
     public abstract GameCell.State getType();
     public abstract List<EntityEvent> onConsume();
 

@@ -9,6 +9,8 @@
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="at.fhhgb.mc.snake.controller.dialog.GameStartDialogController"
         alignment="CENTER"
+        stylesheets="@../css/custom.css"
+        styleClass="dialog-form"
 >
     <padding>
         <Insets top="10" right="20" bottom="10" left="20"/>
@@ -21,27 +23,33 @@
 
     <Separator />
 
-    <HBox spacing="10" alignment="CENTER">
+    <HBox>
         <Label text="Rows [10 - 100]" />
         <Region HBox.hgrow="ALWAYS" />
         <TextField fx:id="rowInput" />
     </HBox>
 
-    <HBox spacing="10" alignment="CENTER">
+    <HBox>
         <Label text="Columns [10 - 100]" />
         <Region HBox.hgrow="ALWAYS" />
         <TextField fx:id="columnInput" />
     </HBox>
 
-    <HBox spacing="10" alignment="CENTER">
+    <HBox>
         <Label text="Initial row of snake [&gt; 0 &amp;&amp; &lt; Rows]" />
         <Region HBox.hgrow="ALWAYS" />
         <TextField fx:id="initialRow" />
     </HBox>
 
-    <HBox spacing="10" alignment="CENTER">
+    <HBox>
         <Label text="Initial column of snake [&gt; 0 &amp;&amp; &lt; Columns]" />
         <Region HBox.hgrow="ALWAYS" />
         <TextField fx:id="initialColumn" />
+    </HBox>
+
+    <HBox>
+        <Label text="Enable walls" />
+        <Region HBox.hgrow="ALWAYS" />
+        <CheckBox fx:id="enableWalls" />
     </HBox>
 </VBox>

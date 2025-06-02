@@ -4,7 +4,7 @@ import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 
 public abstract class EntityEvent {
     public enum EntityEventType {
-        GROWTH, DEATH, POINTS
+        GROWTH, DEATH, POINTS, SPAWN_FOOD
     }
 
     private final AbstractEntity source;

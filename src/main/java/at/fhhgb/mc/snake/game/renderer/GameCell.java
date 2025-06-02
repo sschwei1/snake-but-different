@@ -10,13 +10,15 @@ public class GameCell extends Pane {
     }
 
     private State state;
+    private int currentPriority;
 
     public GameCell() {
-        this(State.EMPTY);
+        this(State.EMPTY, -1);
     }
 
-    public GameCell(State state) {
+    public GameCell(State state, int currentPriority) {
         this.setState(state);
+        this.currentPriority = currentPriority;
 
         this.setBorder(new Border(
             new BorderStroke(
@@ -33,6 +35,10 @@ public class GameCell extends Pane {
     }
 
     public GameCell setState(AbstractEntity entity) {
+        if(this.currentPriority >= entity.getRenderingPriority()) {
+            return this;
+        }
+        this.currentPriority = entity.getRenderingPriority();
         return this.setState(entity.getType());
     }
 
@@ -50,6 +56,7 @@ public class GameCell extends Pane {
     }
 
     public void clear() {
+        this.currentPriority = -1;
         this.setState(State.EMPTY);
     }
 

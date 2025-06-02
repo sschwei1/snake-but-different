@@ -2,7 +2,6 @@ package at.fhhgb.mc.snake.controller.dialog;
 
 import at.fhhgb.mc.snake.elements.dialog.DialogResult;
 import at.fhhgb.mc.snake.game.options.GameOptions;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;

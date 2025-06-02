@@ -12,7 +12,7 @@ import java.io.IOException;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        GLog.enableLogging();
+        GLog.disableLogging();
         Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
 
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("main-window.fxml"));

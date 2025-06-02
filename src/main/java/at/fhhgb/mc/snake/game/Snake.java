@@ -56,7 +56,7 @@ public class Snake {
         if(!this.parts.isEmpty()) {
             SnakePartEntity newPart = this.parts.getLast().clone();
             this.parts.add(newPart);
-            this.entityManager.registerEntity(newPart);
+            this.entityManager.register(newPart);
             return;
         }
 
@@ -67,7 +67,7 @@ public class Snake {
         SnakePartEntity head = new SnakePartEntity(startingPos,true);
 
         this.parts.addFirst(head);
-        this.entityManager.registerEntity(head);
+        this.entityManager.register(head);
     }
 
     public void increaseSizeBy(int amount) {
@@ -85,12 +85,12 @@ public class Snake {
 
         if(this.parts.size() > 1) {
             SnakePartEntity partToMove = this.parts.getLast();
-            this.entityManager.moveEntity(partToMove, head.getPosition().clone());
+            this.entityManager.move(partToMove, head.getPosition().clone());
             this.parts.removeLast();
             this.parts.add(1, partToMove);
         }
 
-        this.entityManager.moveEntity(head, direction);
+        this.entityManager.move(head, direction);
     }
 
     public List<SnakePartEntity> getParts() {

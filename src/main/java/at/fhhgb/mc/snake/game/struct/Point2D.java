@@ -1,6 +1,7 @@
 package at.fhhgb.mc.snake.game.struct;
 
 import at.fhhgb.mc.snake.game.Snake;
+import at.fhhgb.mc.snake.game.options.GameOptions;
 
 import java.util.Objects;
 
@@ -24,6 +25,25 @@ public class Point2D implements Cloneable, Comparable<Point2D> {
         this.y = y;
         this.maxX = maxX;
         this.maxY = maxY;
+    }
+
+    public static Point2D fromInt(int value, GameOptions options) {
+        if(options == null) {
+            throw new IllegalArgumentException("GameOptions cannot be null.");
+        }
+
+        return fromInt(value, options.getGameWidth(), options.getGameHeight());
+    }
+
+    public static Point2D fromInt(int value, int maxX, int maxY) {
+        if(maxX <= 0 || maxY <= 0) {
+            throw new IllegalArgumentException("maxX and maxY must be greater than 0.");
+        }
+
+        int x = value % maxX;
+        int y = value / maxX;
+
+        return new Point2D(x, y, maxX, maxY);
     }
 
     public int getX() {

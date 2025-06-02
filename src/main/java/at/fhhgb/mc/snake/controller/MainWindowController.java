@@ -5,24 +5,33 @@ import at.fhhgb.mc.snake.elements.dialog.GameSpeedDialog;
 import at.fhhgb.mc.snake.elements.dialog.GameStartDialog;
 import at.fhhgb.mc.snake.game.SnakeGame;
 import at.fhhgb.mc.snake.game.options.GameOptions;
-import at.fhhgb.mc.snake.game.options.GameSizeConfig;
+import at.fhhgb.mc.snake.game.options.GameFieldConfig;
 import at.fhhgb.mc.snake.log.GLog;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
+import java.util.Arrays;
+
 public class MainWindowController {
+    private enum GameState {
+        INIT,
+        GAME_OVER,
+        PAUSED,
+        RUNNING
+    }
+
     @FXML private MenuItem startButton;
     @FXML private MenuItem exitButton;
     @FXML private MenuItem gameSpeedButton;
 
     @FXML private VBox gameOverOverlay;
+    @FXML private VBox gamePauseOverlay;
 
     @FXML private Label gameOverPoints;
     @FXML private Label gameOverSize;
@@ -32,7 +41,7 @@ public class MainWindowController {
 
     @FXML private Pane gameContainer;
 
-    private final BooleanProperty gameRunning = new SimpleBooleanProperty(false);
+    private final ObjectProperty<GameState> gameStateProperty = new SimpleObjectProperty<>(GameState.INIT);
 
     private final IntegerProperty score = new SimpleIntegerProperty(0);
     private final IntegerProperty size = new SimpleIntegerProperty(0);
@@ -42,11 +51,14 @@ public class MainWindowController {
 
     @FXML
     public void initialize() {
-        this.startButton.disableProperty().bind(gameRunning);
-        this.exitButton.disableProperty().bind(gameRunning);
-        this.gameSpeedButton.disableProperty().bind(gameRunning);
+        BooleanBinding buttonEnabled = this.getGameStateBinding(GameState.INIT, GameState.GAME_OVER);
 
-        this.gameOverOverlay.visibleProperty().set(false);
+        this.startButton.disableProperty().bind(buttonEnabled.not());
+        this.exitButton.disableProperty().bind(buttonEnabled.not());
+        this.gameSpeedButton.disableProperty().bind(buttonEnabled.not());
+
+        this.gameOverOverlay.visibleProperty().bind(this.getGameStateBinding(GameState.GAME_OVER));
+        this.gamePauseOverlay.visibleProperty().bind(this.getGameStateBinding(GameState.PAUSED) );
 
         this.gameOverPoints.textProperty().bind(this.score.asString());
         this.gameOverSize.textProperty().bind(this.size.asString());
@@ -64,12 +76,11 @@ public class MainWindowController {
             this.gameContainer.getScene().getWindow(),
             this.gameOptions
         );
-        DialogResult<GameSizeConfig> startResult = gameStartDialog.showDialog();
+        DialogResult<GameFieldConfig> startResult = gameStartDialog.showDialog();
 
         GLog.info("Button type: " + startResult.getAction());
 
         if(startResult.getAction() != DialogResult.DialogAction.OK) {
-            GLog.info("Dialog cancelled");
             return;
         }
 
@@ -92,27 +103,36 @@ public class MainWindowController {
         DialogResult<Integer> speedResult = dialog.showDialog();
 
         if(speedResult.getAction() != DialogResult.DialogAction.OK) {
-            GLog.info("Dialog cancelled");
             return;
         }
 
-        GLog.info("New Value: " + speedResult.getResult());
+        GLog.info("Speed Value updated: " + speedResult.getResult());
         this.gameOptions.setTickSpeed(speedResult.getResult());
     }
 
+    @FXML
     private void startNewGame() {
         if(this.activeGame != null) {
             this.activeGame.cleanup();
-        } else {
-            this.gameOverOverlay.visibleProperty().bind(this.gameRunning.not());
         }
 
         this.activeGame = new SnakeGame(this.gameContainer, this.gameOptions)
             .setOnPointsUpdate(event -> this.score.set(event.getTotal()))
             .setOnSnakeGrowth(event -> this.size.set(event.getTotal()))
-            .setOnGameStart(event -> this.gameRunning.set(true))
-            .setOnGameOver(event -> this.gameRunning.set(false));
+            .setOnPause(_ -> this.gameStateProperty.set(GameState.PAUSED))
+            .setOnResume(_ -> this.gameStateProperty.set(GameState.RUNNING))
+            .setOnGameStart(_ -> this.gameStateProperty.set(GameState.RUNNING))
+            .setOnGameOver(_ -> this.gameStateProperty.set(GameState.GAME_OVER));
 
         this.activeGame.start();
+    }
+
+    private BooleanBinding getGameStateBinding(GameState... gameStates) {
+        return Bindings.createBooleanBinding(
+            () -> Arrays.stream(gameStates).anyMatch(state ->
+                state == this.gameStateProperty.get()
+            ),
+            this.gameStateProperty
+        );
     }
 }
