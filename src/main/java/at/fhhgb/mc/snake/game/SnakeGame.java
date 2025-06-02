@@ -317,7 +317,6 @@ public class SnakeGame {
         HashSet<Point2D> availablePositions = this.entityManager.getEmptyPositions();
 
         for(int i = 0; i < spawnFoodEvent.getAmount() && !availablePositions.isEmpty(); i++) {
-            // get random position from available positions
             int randomPosIndex = this.random.nextInt(availablePositions.size());
             Point2D foodPosition = availablePositions.stream()
                 .skip(randomPosIndex)
