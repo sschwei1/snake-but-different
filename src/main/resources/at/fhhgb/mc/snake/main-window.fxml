@@ -32,6 +32,32 @@
                         text="Exit"
                 />
             </Menu>
+            <Menu mnemonicParsing="false" text="Preset Games">
+                <MenuItem
+                        fx:id="easyPresetButton"
+                        mnemonicParsing="false"
+                        onAction="#onEasyPresetButtonClick"
+                        text="Easy"
+                />
+                <MenuItem
+                        fx:id="mediumPresetButton"
+                        mnemonicParsing="false"
+                        onAction="#onMediumPresetButtonClick"
+                        text="Medium"
+                />
+                <MenuItem
+                        fx:id="hardPresetButton"
+                        mnemonicParsing="false"
+                        onAction="#onHardPresetButtonClick"
+                        text="Hard"
+                />
+                <MenuItem
+                        fx:id="defaultPresetButton"
+                        mnemonicParsing="false"
+                        onAction="#onResetToDefaultPreset"
+                        text="Default"
+                />
+            </Menu>
             <Menu mnemonicParsing="false" text="Preferences">
                 <MenuItem
                         fx:id="gameSpeedButton"

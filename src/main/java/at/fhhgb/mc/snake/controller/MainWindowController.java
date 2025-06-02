@@ -12,6 +12,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -29,6 +30,11 @@ public class MainWindowController {
     @FXML private MenuItem startButton;
     @FXML private MenuItem exitButton;
     @FXML private MenuItem gameSpeedButton;
+
+    @FXML private MenuItem easyPresetButton;
+    @FXML private MenuItem mediumPresetButton;
+    @FXML private MenuItem hardPresetButton;
+    @FXML private MenuItem defaultPresetButton;
 
     @FXML private VBox gameOverOverlay;
     @FXML private VBox gamePauseOverlay;
@@ -52,10 +58,13 @@ public class MainWindowController {
     @FXML
     public void initialize() {
         BooleanBinding buttonEnabled = this.getGameStateBinding(GameState.INIT, GameState.GAME_OVER);
-
         this.startButton.disableProperty().bind(buttonEnabled.not());
-        this.exitButton.disableProperty().bind(buttonEnabled.not());
         this.gameSpeedButton.disableProperty().bind(buttonEnabled.not());
+
+        this.easyPresetButton.disableProperty().bind(buttonEnabled.not());
+        this.mediumPresetButton.disableProperty().bind(buttonEnabled.not());
+        this.hardPresetButton.disableProperty().bind(buttonEnabled.not());
+        this.defaultPresetButton.disableProperty().bind(buttonEnabled.not());
 
         this.gameOverOverlay.visibleProperty().bind(this.getGameStateBinding(GameState.GAME_OVER));
         this.gamePauseOverlay.visibleProperty().bind(this.getGameStateBinding(GameState.PAUSED) );
@@ -67,7 +76,7 @@ public class MainWindowController {
         this.snakeSize.textProperty().bind(this.size.asString());
 
         this.activeGame = null;
-        this.gameOptions = GameOptions.getInstance();
+        this.gameOptions = GameOptions.getDefaultCustomOptions();
     }
 
     @FXML
@@ -77,8 +86,6 @@ public class MainWindowController {
             this.gameOptions
         );
         DialogResult<GameFieldConfig> startResult = gameStartDialog.showDialog();
-
-        GLog.info("Button type: " + startResult.getAction());
 
         if(startResult.getAction() != DialogResult.DialogAction.OK) {
             return;
@@ -108,6 +115,30 @@ public class MainWindowController {
 
         GLog.info("Speed Value updated: " + speedResult.getResult());
         this.gameOptions.setTickSpeed(speedResult.getResult());
+    }
+
+    @FXML
+    private void onEasyPresetButtonClick() {
+        this.gameOptions = GameOptions.getEasyMode();
+        this.startNewGame();
+    }
+
+    @FXML
+    private void onMediumPresetButtonClick() {
+        this.gameOptions = GameOptions.getMediumMode();
+        this.startNewGame();
+    }
+
+    @FXML
+    private void onHardPresetButtonClick() {
+        this.gameOptions = GameOptions.getHardMode();
+        this.startNewGame();
+    }
+
+    @FXML
+    private void onResetToDefaultPreset() {
+        this.gameOptions = GameOptions.getDefaultCustomOptions();
+        this.startNewGame();
     }
 
     @FXML

@@ -85,7 +85,7 @@ public class SnakeGame {
         this.random = new Random();
         this.isRunning = false;
         this.isPaused = false;
-        this.inverseDirection = false;
+        this.inverseDirection = true;
 
         this.entityManager = new EntityManager(this.options);
         this.renderer = new DefaultRenderer(this.options, this.entityManager);

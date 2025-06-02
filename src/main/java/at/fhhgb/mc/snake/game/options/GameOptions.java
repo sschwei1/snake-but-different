@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameOptions {
-    private static GameOptions instance;
-
     private int tickSpeed;
     private int initialSnakeLength;
 
@@ -77,46 +75,59 @@ public class GameOptions {
         return this.foodConfiguration.availableFood();
     }
 
-    public static GameOptions updateOptions() {
-        instance = readGameOptionsFromFile();
-        return instance;
+    public static GameOptions getEasyMode() {
+        GameOptions easyOptions = new GameOptions();
+        easyOptions.tickSpeed = 100;
+        easyOptions.initialSnakeLength = 5;
+        easyOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
+        easyOptions.foodConfiguration = new FoodConfiguration(1, new ArrayList<>() {{
+            add(new FoodConfiguration.FoodValueConfig(20, 1, 1));
+        }});
+
+        return easyOptions;
     }
 
-    public static GameOptions updateOptions(GameOptions options) {
-        writeGameOptionsToFile(options);
-        instance = options;
-        return instance;
+    public static GameOptions getMediumMode() {
+        GameOptions mediumOptions = new GameOptions();
+        mediumOptions.tickSpeed = 100;
+        mediumOptions.initialSnakeLength = 5;
+        mediumOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
+        mediumOptions.foodConfiguration = new FoodConfiguration(1, new ArrayList<>() {{
+            add(new FoodConfiguration.FoodValueConfig(100, 3, 1));
+        }});
+
+        return mediumOptions;
     }
 
-    public static GameOptions resetToDefault() {
+    public static GameOptions getHardMode() {
+        GameOptions hardOptions = new GameOptions();
+        hardOptions.tickSpeed = 50;
+        hardOptions.initialSnakeLength = 5;
+        hardOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
+        hardOptions.foodConfiguration = new FoodConfiguration(1, new ArrayList<>() {{
+            add(new FoodConfiguration.FoodValueConfig(200, 5, 1));
+        }});
+
+        return hardOptions;
+    }
+
+    public static GameOptions getDefaultCustomOptions() {
         GameOptions defaultOptions = new GameOptions();
         defaultOptions.tickSpeed = 50;
         defaultOptions.initialSnakeLength = 5;
-        defaultOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), true);
-        defaultOptions.foodConfiguration = new FoodConfiguration(new ArrayList<>() {{
+        defaultOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
+        defaultOptions.foodConfiguration = new FoodConfiguration(1, new ArrayList<>() {{
             add(new FoodConfiguration.FoodValueConfig(100, 5, 1));
             add(new FoodConfiguration.FoodValueConfig(200, 8, 1));
             add(new FoodConfiguration.FoodValueConfig(300, 10, 1));
         }});
 
-        return updateOptions(defaultOptions);
-    }
-
-    public static GameOptions getInstance() {
-        if(instance == null) {
-            instance = readGameOptionsFromFile();
-        }
-
-        return instance;
-    }
-
-    public static GameOptions getClone() {
-        return readGameOptionsFromFile();
+        return defaultOptions;
     }
 
     private static GameOptions readGameOptionsFromFile() {
         // TODO: Implement file reading logic
-        return resetToDefault();
+        return getDefaultCustomOptions();
     }
 
     private static void writeGameOptionsToFile(GameOptions options) {
