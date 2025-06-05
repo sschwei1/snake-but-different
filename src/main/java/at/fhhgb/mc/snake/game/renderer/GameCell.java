@@ -14,7 +14,6 @@ public class GameCell extends Pane {
 
     private static final Map<Color, String> colorStyleCache = new WeakHashMap<>();
 
-    private State state;
     private int currentPriority;
 
     public GameCell() {
@@ -33,10 +32,6 @@ public class GameCell extends Pane {
                 new BorderWidths(1)
             )
         ));
-    }
-
-    public State getState() {
-        return state;
     }
 
     public GameCell setState(AbstractEntity entity) {

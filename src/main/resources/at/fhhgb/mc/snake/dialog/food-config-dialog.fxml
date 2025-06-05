@@ -69,6 +69,6 @@
 
     <HBox spacing="10" alignment="CENTER" styleClass="table-footer">
         <Button text="Add Food" onAction="#onAddFoodClick"/>
-        <Button text="Remove Selected" onAction="#onRemoveFoodClick"/>
+        <Button fx:id="removeFoodButton" text="Remove Selected" onAction="#onRemoveFoodClick"/>
     </HBox>
 </VBox>

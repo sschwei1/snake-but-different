@@ -28,16 +28,12 @@ public class FoodConfigModel {
         }
     }
 
-    private final FoodConfig.FoodValueConfig foodConfig;
-
     private final IntegerProperty pointsIncrease;
     private final IntegerProperty lengthIncrease;
     private final IntegerProperty spawnNewAmount;
     private final ObjectProperty<Color> color;
 
     public FoodConfigModel(FoodConfig.FoodValueConfig foodConfig) {
-        this.foodConfig = foodConfig;
-
         this.pointsIncrease = new SimpleIntegerProperty(foodConfig.pointIncrease());
         this.lengthIncrease = new SimpleIntegerProperty(foodConfig.lengthIncrease());
         this.spawnNewAmount = new SimpleIntegerProperty(foodConfig.spawnNewAmount());

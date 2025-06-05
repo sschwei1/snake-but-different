@@ -29,7 +29,6 @@ public class MainWindowController {
     }
 
     @FXML private MenuItem startButton;
-    @FXML private MenuItem exitButton;
     @FXML private MenuItem gameSpeedButton;
     @FXML private MenuItem foodConfigButton;
 
@@ -90,12 +89,12 @@ public class MainWindowController {
         );
         DialogResult<GameFieldConfig> startResult = gameStartDialog.showDialog();
 
-        if(startResult.getAction() != DialogResult.DialogAction.OK) {
+        if(startResult.action() != DialogResult.DialogAction.OK) {
             return;
         }
 
         GLog.info("Starting game!");
-        this.gameOptions.setGameSizeConfig(startResult.getResult());
+        this.gameOptions.setGameSizeConfig(startResult.result());
         this.startNewGame();
     }
 
@@ -112,12 +111,12 @@ public class MainWindowController {
         );
         DialogResult<Integer> speedResult = dialog.showDialog();
 
-        if(speedResult.getAction() != DialogResult.DialogAction.OK) {
+        if(speedResult.action() != DialogResult.DialogAction.OK) {
             return;
         }
 
-        GLog.info("Speed Value updated: " + speedResult.getResult());
-        this.gameOptions.setTickSpeed(speedResult.getResult());
+        GLog.info("Speed Value updated: " + speedResult.result());
+        this.gameOptions.setTickSpeed(speedResult.result());
     }
 
     @FXML
@@ -127,12 +126,12 @@ public class MainWindowController {
             this.gameOptions
         );
         DialogResult<FoodConfig> foodResult = dialog.showDialog();
-        if(foodResult.getAction() != DialogResult.DialogAction.OK) {
+        if(foodResult.action() != DialogResult.DialogAction.OK) {
             return;
         }
 
-        GLog.info("Food Config updated: " + foodResult.getResult());
-        this.gameOptions.setFoodConfig(foodResult.getResult());
+        GLog.info("Food Config updated: " + foodResult.result());
+        this.gameOptions.setFoodConfig(foodResult.result());
     }
 
     @FXML

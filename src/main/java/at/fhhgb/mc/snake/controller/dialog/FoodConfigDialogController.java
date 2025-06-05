@@ -5,6 +5,7 @@ import at.fhhgb.mc.snake.elements.NumericTextFieldTableCell;
 import at.fhhgb.mc.snake.elements.dialog.DialogResult;
 import at.fhhgb.mc.snake.game.options.FoodConfig;
 import at.fhhgb.mc.snake.game.options.GameOptions;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,6 +22,8 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
     @FXML private TableColumn<FoodConfigModel, Integer> spawnNewFoodAmountColumn;
     @FXML private TableColumn<FoodConfigModel, Color> colorColumn;
 
+    @FXML private Button removeFoodButton;
+
     private final ObservableList<FoodConfigModel> foodList = FXCollections.observableArrayList();
 
     @FXML
@@ -33,6 +36,12 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
         this.setupIntColumn(this.spawnNewFoodAmountColumn, FoodConfigModel.INT_COLUMN.SPAWN_NEW_AMOUNT);
 
         this.setupColorColumn(this.colorColumn);
+
+        this.removeFoodButton.disableProperty().bind(
+            foodTable.getSelectionModel().selectedItemProperty().isNull()
+        );
+
+
     }
 
     @Override
@@ -59,6 +68,20 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
     }
 
     @Override
+    public BooleanBinding getInputsValidBinding() {
+        return new BooleanBinding() {
+            {
+                super.bind(foodList);
+            }
+
+            @Override
+            protected boolean computeValue() {
+                return !foodList.isEmpty();
+            }
+        };
+    }
+
+    @Override
     public DialogResult<FoodConfig> getResult(ButtonType buttonType) {
         if(buttonType.getButtonData() != ButtonBar.ButtonData.OK_DONE) {
             return DialogResult.invalid();
@@ -82,7 +105,7 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
         );
 
         column.setCellFactory(
-            col -> new NumericTextFieldTableCell<>()
+            _ -> new NumericTextFieldTableCell<>()
         );
 
         column.setOnEditCommit(evt -> {
@@ -95,10 +118,10 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
     private void setupColorColumn(TableColumn<FoodConfigModel, Color> column) {
         column.setCellValueFactory(cellData -> cellData.getValue().colorProperty());
 
-        column.setCellFactory(col -> new TableCell<>() {
+        column.setCellFactory(_ -> new TableCell<>() {
             private final ColorPicker colorPicker = new ColorPicker();
             {
-                colorPicker.setOnAction(e -> {
+                colorPicker.setOnAction(_ -> {
                     FoodConfigModel model = getTableView().getItems().get(getIndex());
                     model.colorProperty().set(colorPicker.getValue());
                 });

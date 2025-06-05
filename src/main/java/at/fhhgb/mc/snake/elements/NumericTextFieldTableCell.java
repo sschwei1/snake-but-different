@@ -1,9 +1,7 @@
 package at.fhhgb.mc.snake.elements;
 
-import at.fhhgb.mc.snake.log.GLog;
 import atlantafx.base.util.IntegerStringConverter;
 import javafx.geometry.Pos;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.TextFieldTableCell;
