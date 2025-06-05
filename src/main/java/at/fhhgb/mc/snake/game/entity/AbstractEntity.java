@@ -3,14 +3,17 @@ package at.fhhgb.mc.snake.game.entity;
 import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 
 public abstract class AbstractEntity implements Consumable {
     protected Point2D position;
+    protected Color color;
 
-    public AbstractEntity(Point2D position) {
+    public AbstractEntity(Point2D position, Color color) {
         this.position = position;
+        this.color = color;
     }
 
     public Point2D getPosition() {
@@ -19,6 +22,15 @@ public abstract class AbstractEntity implements Consumable {
 
     public AbstractEntity setPosition(Point2D position) {
         this.position = position;
+        return this;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public AbstractEntity setColor(Color color) {
+        this.color = color;
         return this;
     }
 

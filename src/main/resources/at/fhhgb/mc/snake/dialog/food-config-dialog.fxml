@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.Button?>
+<VBox
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="at.fhhgb.mc.snake.controller.dialog.FoodConfigDialogController"
+        stylesheets="@../css/custom.css"
+        styleClass="dialog-form"
+>
+    <Label
+            text="Food Configuration"
+            styleClass="header"
+    />
+
+    <Separator />
+
+    <TableView fx:id="foodTable">
+        <columns>
+            <TableColumn
+                    fx:id="pointsIncreaseColumn"
+                    text="Points Inc."
+                    prefWidth="125"
+                    resizable="false"
+            >
+                <cellValueFactory>
+                    <PropertyValueFactory property="pointsIncrease" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn
+                    fx:id="lengthIncreaseColumn"
+                    text="Length Inc."
+                    prefWidth="125"
+                    resizable="false"
+            >
+                <cellValueFactory>
+                    <PropertyValueFactory property="lengthIncrease" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn
+                    fx:id="spawnNewFoodAmountColumn"
+                    text="Respawn Cnt."
+                    prefWidth="125"
+                    resizable="false"
+            >
+                <cellValueFactory>
+                    <PropertyValueFactory property="spawnNewAmount" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn
+                    fx:id="colorColumn"
+                    text="Color"
+                    prefWidth="150"
+                    resizable="false"
+            >
+                <cellValueFactory>
+                    <PropertyValueFactory property="color" />
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER" styleClass="table-footer">
+        <Button text="Add Food" onAction="#onAddFoodClick"/>
+        <Button text="Remove Selected" onAction="#onRemoveFoodClick"/>
+    </HBox>
+</VBox>

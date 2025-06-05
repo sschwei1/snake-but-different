@@ -16,7 +16,7 @@ public class EntityManager {
         private final int hash;
 
         public DummyEntity(Point2D position, int hash) {
-            super(position);
+            super(position, null);
             this.hash = hash;
         }
 

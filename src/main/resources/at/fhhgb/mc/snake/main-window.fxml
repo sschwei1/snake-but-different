@@ -70,6 +70,12 @@
                         onAction="#onGameSpeedButtonClick"
                         text="Game Speed"
                 />
+                <MenuItem
+                        fx:id="foodConfigButton"
+                        mnemonicParsing="false"
+                        onAction="#onFoodConfigButtonClick"
+                        text="Food Config"
+                />
             </Menu>
         </MenuBar>
     </top>

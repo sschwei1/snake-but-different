@@ -1,9 +1,11 @@
 package at.fhhgb.mc.snake.controller;
 
 import at.fhhgb.mc.snake.elements.dialog.DialogResult;
+import at.fhhgb.mc.snake.elements.dialog.FoodConfigDialog;
 import at.fhhgb.mc.snake.elements.dialog.GameSpeedDialog;
 import at.fhhgb.mc.snake.elements.dialog.GameStartDialog;
 import at.fhhgb.mc.snake.game.SnakeGame;
+import at.fhhgb.mc.snake.game.options.FoodConfig;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.options.GameFieldConfig;
 import at.fhhgb.mc.snake.log.GLog;
@@ -12,7 +14,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -30,6 +31,7 @@ public class MainWindowController {
     @FXML private MenuItem startButton;
     @FXML private MenuItem exitButton;
     @FXML private MenuItem gameSpeedButton;
+    @FXML private MenuItem foodConfigButton;
 
     @FXML private MenuItem easyPresetButton;
     @FXML private MenuItem mediumPresetButton;
@@ -60,6 +62,7 @@ public class MainWindowController {
         BooleanBinding buttonEnabled = this.getGameStateBinding(GameState.INIT, GameState.GAME_OVER);
         this.startButton.disableProperty().bind(buttonEnabled.not());
         this.gameSpeedButton.disableProperty().bind(buttonEnabled.not());
+        this.foodConfigButton.disableProperty().bind(buttonEnabled.not());
 
         this.easyPresetButton.disableProperty().bind(buttonEnabled.not());
         this.mediumPresetButton.disableProperty().bind(buttonEnabled.not());
@@ -115,6 +118,21 @@ public class MainWindowController {
 
         GLog.info("Speed Value updated: " + speedResult.getResult());
         this.gameOptions.setTickSpeed(speedResult.getResult());
+    }
+
+    @FXML
+    private void onFoodConfigButtonClick() {
+        FoodConfigDialog dialog = new FoodConfigDialog(
+            this.gameContainer.getScene().getWindow(),
+            this.gameOptions
+        );
+        DialogResult<FoodConfig> foodResult = dialog.showDialog();
+        if(foodResult.getAction() != DialogResult.DialogAction.OK) {
+            return;
+        }
+
+        GLog.info("Food Config updated: " + foodResult.getResult());
+        this.gameOptions.setFoodConfig(foodResult.getResult());
     }
 
     @FXML

@@ -15,7 +15,7 @@ import at.fhhgb.mc.snake.game.event.state.game.OnGamePauseEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameResumeEvent;
 import at.fhhgb.mc.snake.game.event.state.snake.OnSnakePointsChangeEvent;
 import at.fhhgb.mc.snake.game.event.state.snake.OnSnakeSizeChangeEvent;
-import at.fhhgb.mc.snake.game.options.FoodConfiguration;
+import at.fhhgb.mc.snake.game.options.FoodConfig;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.renderer.DefaultRenderer;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
@@ -85,7 +85,7 @@ public class SnakeGame {
         this.random = new Random();
         this.isRunning = false;
         this.isPaused = false;
-        this.inverseDirection = true;
+        this.inverseDirection = false;
 
         this.entityManager = new EntityManager(this.options);
         this.renderer = new DefaultRenderer(this.options, this.entityManager);
@@ -324,7 +324,7 @@ public class SnakeGame {
                 .orElseThrow(() -> new IllegalStateException("No available positions for food."));
 
             int randomFoodIndex = this.random.nextInt(this.options.getAvailableFoods().size());
-            FoodConfiguration.FoodValueConfig foodValueConfig = this.options.getAvailableFoods().get(randomFoodIndex);
+            FoodConfig.FoodValueConfig foodValueConfig = this.options.getAvailableFoods().get(randomFoodIndex);
 
             this.entityManager.register(new FoodEntity(
                 foodPosition,

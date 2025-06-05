@@ -28,11 +28,26 @@
     -fx-padding: 10px 20px;
 }
 
-.dialog-form HBox {
+.dialog-form {
+    -fx-alignment: CENTER;
+    -fx-padding: 10px 20px;
+}
+
+.dialog-form HBox, .dialog-form VBox {
     -fx-alignment: center;
     -fx-spacing: 10px;
 }
 
 .dialog-form CheckBox {
     -fx-padding: 10px;
+}
+
+.dialog-form .header {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-padding: 0;
+}
+
+.dialog-form .table-footer {
+    -fx-padding: 15px 0;
 }

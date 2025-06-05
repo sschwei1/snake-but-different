@@ -4,6 +4,7 @@ import at.fhhgb.mc.snake.game.event.entity.EntityDeathEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 
@@ -15,8 +16,13 @@ public class SnakePartEntity extends AbstractEntity implements Cloneable {
     }
 
     public SnakePartEntity(Point2D position, boolean isHead) {
-        super(position);
+        super(position, Color.GREEN);
         this.isHead = isHead;
+    }
+
+    @Override
+    public Color getColor() {
+        return this.isHead ? Color.LIGHTGREEN : Color.GREEN;
     }
 
     @Override

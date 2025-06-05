@@ -1,11 +1,8 @@
 package at.fhhgb.mc.snake.game.renderer;
 
-import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import at.fhhgb.mc.snake.game.struct.Point2D;
-
-import java.util.List;
 
 public abstract class AbstractGameRenderer {
     protected final GameOptions options;

@@ -4,12 +4,13 @@ import at.fhhgb.mc.snake.game.event.entity.EntityDeathEvent;
 import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
 import at.fhhgb.mc.snake.game.renderer.GameCell;
 import at.fhhgb.mc.snake.game.struct.Point2D;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 
 public class WallEntity extends AbstractEntity {
     public WallEntity(Point2D position) {
-        super(position);
+        super(position, Color.DARKGRAY);
     }
 
     @Override
