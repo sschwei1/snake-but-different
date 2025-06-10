@@ -6,6 +6,10 @@ import at.fhhgb.mc.snake.elements.dialog.DialogResult;
 import at.fhhgb.mc.snake.game.options.FoodConfig;
 import at.fhhgb.mc.snake.game.options.GameOptions;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,6 +19,11 @@ import javafx.scene.paint.Color;
 import java.util.stream.Collectors;
 
 public class FoodConfigDialogController extends DialogBaseController<FoodConfig> {
+    @FXML private TextField initialFoodCountInput;
+
+    @FXML private Label speedIncPerCollectedLabel;
+    @FXML private Slider speedIncPerCollectedSlider;
+
     @FXML private TableView<FoodConfigModel> foodTable;
 
     @FXML private TableColumn<FoodConfigModel, Integer> pointsIncreaseColumn;
@@ -24,12 +33,20 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
 
     @FXML private Button removeFoodButton;
 
+    private final IntegerProperty initialFoodCountProperty = new SimpleIntegerProperty();
+    private final DoubleProperty speedIncPerCollectedProperty = new SimpleDoubleProperty();
     private final ObservableList<FoodConfigModel> foodList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        this.foodTable.setItems(this.foodList);
+        DialogBaseController.BindTextFieldToIntegerProperty(this.initialFoodCountInput, this.initialFoodCountProperty);
 
+        this.speedIncPerCollectedSlider.valueProperty().bindBidirectional(this.speedIncPerCollectedProperty);
+        this.speedIncPerCollectedLabel.textProperty().bind(
+            this.speedIncPerCollectedProperty.asString("Speed increase per collected food x%.2f")
+        );
+
+        this.foodTable.setItems(this.foodList);
         this.foodTable.setEditable(true);
         this.setupIntColumn(this.pointsIncreaseColumn, FoodConfigModel.INT_COLUMN.POINTS_INCREASE);
         this.setupIntColumn(this.lengthIncreaseColumn, FoodConfigModel.INT_COLUMN.LENGTH_INCREASE);
@@ -40,12 +57,13 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
         this.removeFoodButton.disableProperty().bind(
             foodTable.getSelectionModel().selectedItemProperty().isNull()
         );
-
-
     }
 
     @Override
     public void initializeWithOptions(GameOptions options) {
+        this.initialFoodCountInput.setText(String.valueOf(options.getInitialFoodSpawnCount()));
+        this.speedIncPerCollectedProperty.setValue(options.getSpeedIncreasePerFoodCollected());
+
         this.foodList.addAll(
             options.getAvailableFoods()
                 .stream()
@@ -90,7 +108,8 @@ public class FoodConfigDialogController extends DialogBaseController<FoodConfig>
         return new DialogResult<>(
             DialogResult.DialogAction.OK,
             new FoodConfig(
-                1,
+                this.initialFoodCountProperty.getValue(),
+                this.speedIncPerCollectedProperty.getValue(),
                 this.foodList.stream()
                     .map(FoodConfigModel::toFoodValueConfig)
                     .toList()

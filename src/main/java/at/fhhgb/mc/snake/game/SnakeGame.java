@@ -4,10 +4,7 @@ import at.fhhgb.mc.snake.game.entity.AbstractEntity;
 import at.fhhgb.mc.snake.game.entity.FoodEntity;
 import at.fhhgb.mc.snake.game.entity.WallEntity;
 import at.fhhgb.mc.snake.game.entity.manager.EntityManager;
-import at.fhhgb.mc.snake.game.event.entity.EntityEvent;
-import at.fhhgb.mc.snake.game.event.entity.EntityGrowthEvent;
-import at.fhhgb.mc.snake.game.event.entity.EntityPointsEvent;
-import at.fhhgb.mc.snake.game.event.entity.EntitySpawnFoodEvent;
+import at.fhhgb.mc.snake.game.event.entity.*;
 import at.fhhgb.mc.snake.game.event.state.StateEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameOverEvent;
 import at.fhhgb.mc.snake.game.event.state.game.OnGameStartEvent;
@@ -56,6 +53,7 @@ public class SnakeGame {
     private boolean isRunning;
     private boolean isPaused;
     private boolean inverseDirection;
+    private double currentSpeed;
 
     private List<Snake.Direction> queuedDirections;
     private Snake.Direction currentDirection;
@@ -77,7 +75,11 @@ public class SnakeGame {
         this.initTimer();
         this.initKeyListener();
 
-        this.handleSpawnFoodEvent(new EntitySpawnFoodEvent(null, 1));
+        this.handleSpawnFoodEvent(
+            new EntitySpawnFoodEvent(null, this.options.getInitialFoodSpawnCount())
+        );
+
+        // Can never be null, but java complains about it
         Objects.requireNonNull(this.renderer).update();
     }
 
@@ -86,6 +88,7 @@ public class SnakeGame {
         this.isRunning = false;
         this.isPaused = false;
         this.inverseDirection = false;
+        this.currentSpeed = this.options.getTickSpeed();
 
         this.entityManager = new EntityManager(this.options);
         this.renderer = new DefaultRenderer(this.options, this.entityManager);
@@ -153,8 +156,12 @@ public class SnakeGame {
     }
 
     private void initTimer() {
+        if(this.timer != null) {
+            this.timer.stop();
+        }
+
         this.timer = new Timeline(
-            new KeyFrame(Duration.millis(this.options.getTickSpeed()), this::gameLoop)
+            new KeyFrame(Duration.millis(this.currentSpeed), this::gameLoop)
         );
 
         this.timer.setCycleCount(Timeline.INDEFINITE);
@@ -225,15 +232,17 @@ public class SnakeGame {
         var time = System.currentTimeMillis();
         this.updateEntities();
         var afterUpdateTime = System.currentTimeMillis();
-        System.out.println("Update Entities Duration: " + (afterUpdateTime - time));
+        GLog.info("Update Entities Duration: " + (afterUpdateTime - time));
+
         this.updateData();
         var afterDataUpdateTime = System.currentTimeMillis();
-        System.out.println("Update Data Duration: " + (afterDataUpdateTime - afterUpdateTime));
+        GLog.info("Update Data Duration: " + (afterDataUpdateTime - afterUpdateTime));
+
         renderer.update();
         var afterRenderTime = System.currentTimeMillis();
-        System.out.println("Render Duration: " + (afterRenderTime - afterDataUpdateTime));
-        System.out.println("Game loop took: " + (System.currentTimeMillis() - time) + "ms");
-        System.out.println("Total entities: " + this.entityManager.getAll().size());
+        GLog.info("Render Duration: " + (afterRenderTime - afterDataUpdateTime));
+
+        GLog.info("Game loop took: " + (System.currentTimeMillis() - time) + "ms");
     }
 
     private void updateEntities() {
@@ -269,10 +278,11 @@ public class SnakeGame {
     private void consumeEvents(List<EntityEvent> events) {
         for(EntityEvent event : events) {
             switch(event.getEventType()) {
-                case POINTS:     handlePointsEvent(event);      break;
-                case GROWTH:     handleGrowthEvent(event);      break;
-                case DEATH:      handleDeathEvent();            break;
-                case SPAWN_FOOD: handleSpawnFoodEvent(event);   break;
+                case POINTS:       handlePointsEvent(event);      break;
+                case GROWTH:       handleGrowthEvent(event);      break;
+                case DEATH:        handleDeathEvent();            break;
+                case SPAWN_FOOD:   handleSpawnFoodEvent(event);   break;
+                case SPEED_CHANGE: handleSpeedChangeEvent(event); break;
             }
         }
     }
@@ -328,9 +338,18 @@ public class SnakeGame {
 
             this.entityManager.register(new FoodEntity(
                 foodPosition,
-                foodValueConfig
+                foodValueConfig,
+                this.options.getSpeedIncreasePerFoodCollected()
             ));
         }
+    }
+
+    private void handleSpeedChangeEvent(EntityEvent event) {
+        if(!(event instanceof EntitySpeedChangeEvent speedChangeEvent)) return;
+
+        this.currentSpeed /= speedChangeEvent.getSpeedIncreaseFactor();
+        this.initTimer();
+        this.timer.play();
     }
 
     private void handleKeyEvent(KeyEvent event) {

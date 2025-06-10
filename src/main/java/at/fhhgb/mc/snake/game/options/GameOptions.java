@@ -77,6 +77,14 @@ public class GameOptions {
         return this.gameFieldConfig.wallEnabled();
     }
 
+    public int getInitialFoodSpawnCount() {
+        return this.foodConfig.initiallySpawnedFood();
+    }
+
+    public double getSpeedIncreasePerFoodCollected() {
+        return this.foodConfig.speedIncPerCollected();
+    }
+
     public List<FoodConfig.FoodValueConfig> getAvailableFoods() {
         return this.foodConfig.availableFood();
     }
@@ -86,7 +94,7 @@ public class GameOptions {
         easyOptions.tickSpeed = 100;
         easyOptions.initialSnakeLength = 5;
         easyOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
-        easyOptions.foodConfig = new FoodConfig(1, new ArrayList<>() {{
+        easyOptions.foodConfig = new FoodConfig(1, 1, new ArrayList<>() {{
             add(
                 new FoodConfig.FoodValueConfig(
                     20,
@@ -105,7 +113,7 @@ public class GameOptions {
         mediumOptions.tickSpeed = 100;
         mediumOptions.initialSnakeLength = 5;
         mediumOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
-        mediumOptions.foodConfig = new FoodConfig(1, new ArrayList<>() {{
+        mediumOptions.foodConfig = new FoodConfig(1, 1, new ArrayList<>() {{
             add(new FoodConfig.FoodValueConfig(100, 3, 1, Color.RED));
         }});
 
@@ -117,7 +125,7 @@ public class GameOptions {
         hardOptions.tickSpeed = 50;
         hardOptions.initialSnakeLength = 5;
         hardOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
-        hardOptions.foodConfig = new FoodConfig(1, new ArrayList<>() {{
+        hardOptions.foodConfig = new FoodConfig(1, 1, new ArrayList<>() {{
             add(new FoodConfig.FoodValueConfig(200, 5, 1, Color.RED));
         }});
 
@@ -129,7 +137,7 @@ public class GameOptions {
         defaultOptions.tickSpeed = 50;
         defaultOptions.initialSnakeLength = 5;
         defaultOptions.gameFieldConfig = new GameFieldConfig(20, 20, new Point2D(1,1), false);
-        defaultOptions.foodConfig = new FoodConfig(1, new ArrayList<>() {{
+        defaultOptions.foodConfig = new FoodConfig(1, 1, new ArrayList<>() {{
             add(new FoodConfig.FoodValueConfig(100, 5, 1, Color.YELLOW));
             add(new FoodConfig.FoodValueConfig(200, 8, 1, Color.ORANGE));
             add(new FoodConfig.FoodValueConfig(300, 10, 1, Color.RED));

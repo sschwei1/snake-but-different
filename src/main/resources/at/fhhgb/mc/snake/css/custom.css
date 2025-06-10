@@ -48,6 +48,11 @@
     -fx-padding: 0;
 }
 
+
 .dialog-form .table-footer {
     -fx-padding: 15px 0;
+}
+
+.dialog-form .pad-bottom {
+    -fx-padding: 0 0 20px 0;
 }
