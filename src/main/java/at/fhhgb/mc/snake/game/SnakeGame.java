@@ -348,6 +348,9 @@ public class SnakeGame {
         if(!(event instanceof EntitySpeedChangeEvent speedChangeEvent)) return;
 
         this.currentSpeed /= speedChangeEvent.getSpeedIncreaseFactor();
+        this.currentSpeed = Math.max(this.currentSpeed, 5);
+
+        if(!this.isRunning) return;
         this.initTimer();
         this.timer.play();
     }
